@@ -38,7 +38,7 @@ class ctrlItem extends Controller
 
     public function todos(){
         //if (!$request->ajax()) return redirect('/');
-        $lista = item::select("id","nombre")->get();
+        $lista = item::select("id","nombre","precio","stock")->get();
         return ['data' => $lista];
     }
          /**

@@ -33,6 +33,10 @@
     </template> 
     <template v-if="menu==10">
         <h1>nota de servicio</h1>
-    </template>       
+    </template>
+    
+    <template v-if="menu==20">
+        <frmreserva-component :usuario={{ Auth()->user()->id??0 }}></frmreserva-component>
+     </template>
 
 @endsection

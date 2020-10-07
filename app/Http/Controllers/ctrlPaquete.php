@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\paquete;
 use App\paqueteitem;
+use App\item;
 use DB;
 
 class ctrlPaquete extends Controller
@@ -98,6 +99,15 @@ class ctrlPaquete extends Controller
             $detalle->cantidad=$det['cantidad'];
             $detalle->precio=$det['precio'];
             $detalle->save();
+            /*ACTUALIZAR EL STOCK DEL ITEM*/
+            
+            $item=new item();
+            $item = item::findOrFail($det['idItem']);
+            $item->stock = $det['stock']-$det['cantidad'];
+            $item->save();
+
+
+
         }
         DB::commit();
         }

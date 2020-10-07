@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\User;
+
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -50,9 +51,13 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'nombre' => ['required', 'string', 'max:100'],
+            'apellido' => ['required', 'string', 'max:255'],
+            'usuario' => ['required', 'string', 'max:255'],
+            'ci' => ['required', 'string', 'min:5'],
+            'direccion' => ['required', 'string', 'min:8'],
+            'telefono' => ['required', 'string', 'min:5'],
+            'password' => ['required', 'string', 'min:8']
         ]);
     }
 
@@ -65,9 +70,13 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'nombre' => $data['nombre'],
+            'apellido' => $data['apellido'],
+            'ci' => $data['ci'],
+            'direccion' => $data['direccion'],
+            'telefono' => $data['telefono'],
+            'usuario' => $data['usuario'],
+            'password' =>$data['password']
         ]);
     }
 }

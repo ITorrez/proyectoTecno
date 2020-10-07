@@ -2,27 +2,26 @@
     <main class="main">
         <!-- Breadcrumb -->
         <ol class="breadcrumb">
-            <!--  esto no borres sino se apega el contenido cuidau -->
+            <!-- coño esto no borres sino se apega el contenido cuidau -->
         </ol>
         <div class="container-fluid">
             <!-- Ejemplo de tabla Listado -->
             <div class="card">
                 <div class="card-header">
-                    <i class="fa fa-align-justify"></i> Salones
-                    <button type="button" @click="abrirModal('salon','guardar')" class="btn btn-secondary" >
-                        <i class="icon-plus"></i>&nbsp;Nuevo
+                    <i class="fa fa-align-justify"></i> Clientes
+                    <button type="button" @click="abrirModal('cliente','guardar')" class="btn btn-secondary" >
+                        <i class="icon-plus"></i>&nbsp;Registrarme
                     </button>
                 </div>
-                <div class="card-body">
+                <!-- <div class="card-body">
                     <div class="form-group row">
                         <div class="col-md-6">
                             <div class="input-group">
                                 <select class="form-control col-md-3" id="opcion" v-model="criterio">
-                                <option value="nombre">Nombre</option>
-                                <option value="descripcion">Descripcion</option>
+                                <option value="apellido">Apellido</option>
                                 </select>
                                 <input type="text" v-model="buscar"  class="form-control" placeholder="Texto a buscar">
-                                <button type="submit" @click="listarSalon(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                <button type="submit" @click="listarCliente(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                             </div>
                         </div>
                     </div>
@@ -30,38 +29,40 @@
                         <thead>
                             <tr>
                                 <th>Opciones</th>
-                                <th>Foto</th>
                                 <th>Nombre</th>
-                                <th>Descripcion</th>
-                                <th>Ubicacion</th>
-                                <th>Estado</th>
-                                <th>Precio</th>
+                                <th>Apellido</th>
+                                <th>Ci</th>
+                                <th>Dirección</th>
+                                <th>Telefono</th>
+                                <th>Usuario</th>
+                                <th>Password</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="salon in arraySalon" :key="salon.id">
+                            <tr v-for="cliente in arrayCliente" :key="cliente.id">
                                 <td>
-                                    <button type="button" @click="abrirModal('salon','actualizar',salon)" class="btn btn-warning btn-sm">
+                                    <button type="button" @click="abrirModal('cliente','actualizar',cliente)" class="btn btn-warning btn-sm">
                                     <i class="icon-pencil"></i>
                                     </button> &nbsp;
                                     <template >
-                                       <button type="button" class="btn-danger btn-sm" @click="eliminarSalon(salon.id)">
+                                       <button type="button" class="btn-danger btn-sm" @click="eliminarCliente(cliente.id)">
                                            <i class="icon-trash"></i>
                                        </button>
                                     </template>
                                 </td>
-                                <td v-text="salon.foto"></td>
-                                <td v-text="salon.nombre"></td>
-                                <td v-text="salon.descripcion"></td>
-                                <td v-text="salon.ubicacion"></td>
-                                <td v-text="salon.estado"></td>
-                                <td v-text="salon.precio"></td>
+                                
+                                <td v-text="cliente.nombre"></td>
+                                <td v-text="cliente.apellido"></td>
+                                <td v-text="cliente.ci"></td>
+                                <td v-text="cliente.direccion"></td>
+                                <td v-text="cliente.telefono"></td>
+                                <td v-text="cliente.usuario"></td>
+                                <td v-text="cliente.password"></td>
                                
                             </tr>
                             
                         </tbody>
                     </table>
-                    
                      <nav>
                             <ul class="pagination">
                                 <li class="page-item" v-if="pagination.current_page > 1">
@@ -75,7 +76,8 @@
                                 </li>
                             </ul>
                     </nav>
-                </div>
+                </div> -->
+                <!-- /FIN DE  card-body -->
             </div>
             <!-- Fin ejemplo de tabla Listado -->
         </div>
@@ -92,44 +94,50 @@
                     <div class="modal-body">
                         <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                             <div class="form-group row">
-                                <label class="col-md-3 form-control-label" for="email-input">Foto</label>
-                                <div class="col-md-9">
-                                    <input type="text" v-model="foto" class="form-control" placeholder="foto">
-                                </div>
-                            </div>
-                            <div class="form-group row">
                                 <label class="col-md-3 form-control-label" for="email-input">Nombre</label>
                                 <div class="col-md-9">
-                                    <input type="text" v-model="nombre" class="form-control" placeholder="nombre">
+                                    <input type="text" v-model="nombre" class="form-control" placeholder="Nombre">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label class="col-md-3 form-control-label" for="email-input">Descripción</label>
+                                <label class="col-md-3 form-control-label" for="email-input">Apellido</label>
                                 <div class="col-md-9">
-                                    <input type="text" v-model="descripcion" class="form-control" placeholder="descripcion">
+                                    <input type="text" v-model="apellido" class="form-control" placeholder="Apellido">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label class="col-md-3 form-control-label" for="email-input">Ubicacion</label>
+                                <label class="col-md-3 form-control-label" for="email-input">Ci</label>
                                 <div class="col-md-9">
-                                    <input type="text" v-model="ubicacion" class="form-control" placeholder="ubicacion">
-                                </div>
-                            </div>
-                             <div class="form-group row">
-                                <label class="col-md-3 form-control-label" for="email-input">Estado</label>
-                                <div class="col-md-9">
-                                    <input type="text" v-model="estado" class="form-control" placeholder="estado">
+                                    <input type="text" v-model="ci" class="form-control" placeholder="Ci">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label class="col-md-3 form-control-label" for="email-input">Precio</label>
+                                <label class="col-md-3 form-control-label" for="email-input">Dirección</label>
                                 <div class="col-md-9">
-                                    <input type="text" v-model="precio" class="form-control" placeholder="precio">
+                                    <input type="text" v-model="direccion" class="form-control" placeholder="Dirección">
                                 </div>
                             </div>
-                            <div v-show="errorsalon" class="form-group row div - error">
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label" for="email-input">Telefono</label>
+                                <div class="col-md-9">
+                                    <input type="number" v-model="telefono" class="form-control" placeholder="Telefono">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label" for="email-input">Usuario</label>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="usuario" class="form-control" placeholder="Usuario">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label" for="email-input">Password</label>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="password" class="form-control" placeholder="Password">
+                                </div>
+                            </div>
+                            <div v-show="errorCliente" class="form-group row div - error">
                                 <div class="text-center text-error">
-                                    <div v-for="error in errorMostrarMsjsalon" :key="error" v-text="error" >
+                                    <div v-for="error in errorMostrarMsjCliente" :key="error" v-text="error" >
     
                                     </div>
                                 </div>   
@@ -138,8 +146,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
-                        <button type="button" v-if="tipoAccion==1" class="btn btn-primary" @click="guardarSalon()" >Guardar</button>
-                        <button type="button" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarSalon()" >Actualizar</button>
+                        <button type="button" v-if="tipoAccion==1" class="btn btn-primary" @click="guardarCliente()" >Guardar</button>
+                        <button type="button" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarCliente()" >Actualizar</button>
                     </div>
                 </div>
                 <!-- /.modal-content -->
@@ -156,20 +164,25 @@
 
 <script>
     export default {
+        props:{
+            usuario:parseInt(),
+        },
         data () {
             return {
-                salon_id: 0,
-                foto:'',
-                nombre:'',
-                descripcion: '',
-                ubicacion: '',
-                estado: '',
-                arraySalon: [],
+                cliente_id: 0,
+                nombre: '',
+                apellido: '',
+                ci: '',
+                direccion: '',
+                telefono: '',
+                usuario: '',
+                password: '',
+                arrayCliente: [],
                 modal : 0,
                 tituloModal : '',
                 tipoAccion : 0,
-                errorsalon : 0,
-                errorMostrarMsjsalon :[],
+                errorCliente : 0,
+                errorMostrarMsjCliente :[],
                 pagination :{
                     'total' : 0,
                     'current_page' : 0,
@@ -214,12 +227,12 @@
             }
         },
         methods :{
-            listarSalon(page,buscar,criterio){
+            listarCliente(page,buscar,criterio){
                 let me=this;
-                var url= '/salon?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
+                var url= '/cliente?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
-                    me.arraySalon = respuesta.salon.data;
+                    me.arrayCliente = respuesta.cliente.data;
                     me.pagination= respuesta.pagination;
                 })
                 .catch(function (error) {
@@ -231,24 +244,26 @@
                 //Actualiza la página actual
                 me.pagination.current_page = page;
                 //Envia la petición para visualizar la data de esa página
-                me.listarSalon(page,buscar,criterio);
+                me.listarCliente(page,buscar,criterio);
             },
-            guardarSalon(){
-                if (this.validarSalon()){
+            guardarCliente(){
+                if (this.validarCliente()){
                     return;
                 }
                 let me = this;
-                axios.post('/salon/guardar',{
-                    'foto' : this.foto,
+                axios.post('/register',{
+                 
                     'nombre' : this.nombre,
-                    'descripcion' : this.descripcion,
-                    'ubicacion' : this.ubicacion,
-                    'estado' : this.estado,
-                    'precio' : this.precio
+                    'apellido' : this.apellido,
+                    'ci' : this.ci,
+                    'direccion' : this.direccion,
+                    'telefono' : this.telefono,
+                    'usuario' : this.usuario,
+                    'password' : this.password
 
                 }) .then(function(response){
                     me.cerrarModal();
-                    me.listarSalon(1,'','nombre');
+                    me.listarCliente(1,'','nombre');
 
                 }).catch(function(error){
                     console.log(error);
@@ -256,31 +271,32 @@
                 });
 
             },
-            actualizarSalon(){
-                 if (this.validarSalon()){
+            actualizarCliente(){
+                 if (this.validarCliente()){
                     return;
                 }
                 let me = this;
-                axios.put('/salon/actualizar',{
-                    'foto' : this.foto,
+                axios.put('/cliente/actualizar',{
                     'nombre' : this.nombre,
-                    'descripcion' : this.descripcion,
-                    'ubicacion' : this.ubicacion,
-                    'estado' : this.estado,
-                    'precio' : this.precio,
-                    'id': this.salon_id
+                    'apellido' : this.apellido,
+                    'ci' : this.ci,
+                    'direccion' : this.direccion,
+                    'telefono' : this.telefono,
+                    'usuario' : this.usuario,
+                    'password' : this.password,
+                    'id': this.cliente_id,
 
                 }) .then(function(response){
                     me.cerrarModal();
-                    me.listarSalon(1,'','nombre');
+                    me.listarCliente(1,'','nombre');
 
                 }).catch(function(error){
                     console.log(error);
 
                 });
-            },eliminarSalon(id){
+            },eliminarCliente(id){
                  swal({
-                title: 'Esta seguro de eliminar este Salon?',
+                title: 'Esta seguro de eliminar este Cliente?',
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -295,10 +311,10 @@
                 if (result.value) {
                     let me = this;
 
-                    axios.delete('/salon/eliminar_' + id,{
+                    axios.delete('/cliente/eliminar_' + id,{
                         'id': id
                     }).then(function (response) {
-                        me.listarSalon(1,'','nombre');
+                        me.listarCliente(1,'','descripcion');
                         swal(
                         'Eliminado!',
                         'El registro ha sido eliminado con exito.',
@@ -317,40 +333,43 @@
                 }
                 }) 
             },
-            validarSalon(){
-                this.errorsalon=0;
-                this.errorMostrarMsjsalon=[];
+            validarCliente(){
+                this.errorCliente=0;
+                this.errorMostrarMsjCliente =[];
 
-                if (!this.nombre) this.errorMostrarMsjsalon.push("el nombre del Salon no puede estar vacio.");
+                if (!this.nombre) this.errorMostrarMsjCliente.push("La descripcion del Cliente no puede estar vacio.");
 
-                if (this.errorMostrarMsjsalon.length) this.errorsalon =1;
+                if (this.errorMostrarMsjCliente.length) this.errorCliente =1;
 
-                return this.errorsalon;
+                return this.errorCliente;
             },
             cerrarModal(){
                 this.modal=0;
                 this.tituloModal='';
-                this.foto='';
                 this.nombre='';
-                this.descripcion='';
-                this.ubicacion='';
-                this.estado='';
+                this.apellido='';
+                this.ci='';
+                this.telefono='';
+                this.direccion='';
+                this.usuario='';
+                this.password='';
             },
             abrirModal(modelo, accion, data = []){
                 switch(modelo){
-                    case "salon": 
+                    case "cliente": 
                     {
                         switch(accion){
                             case 'guardar':
                             {
                                 this.modal = 1;
-                                this.tituloModal = 'Registar Salon';
-                                this.foto = '';
+                                this.tituloModal = 'Registar Cliente';
                                 this.nombre = '';
-                                this.descripcion = '';
-                                this.ubicacion='';
-                                this.estado='';
-                                this.precio='';
+                                this.apellido = '';
+                                this.ci = '';
+                                this.direccion = '';
+                                this.telefono = '';
+                                this.usuario = '';
+                                this.password = '';
                                 this.tipoAccion = 1;
                                 break;
                             }
@@ -358,15 +377,16 @@
                             {
                                 //console.log(data);
                                 this.modal=1;
-                                this.tituloModal='Actualizar Salon';
+                                this.tituloModal='Actualizar Cliente';
                                 this.tipoAccion=2;
-                                this.salon_id=data['id'];
-                                this.foto = data ['foto'];
+                                this.cliente_id=data['id'];
                                 this.nombre = data ['nombre'];
-                                this.descripcion = data ['descripcion'];
-                                this.ubicacion = data ['ubicacion'];
-                                this.estado = data ['estado'];
-                                this.precio = data ['precio'];
+                                this.apellido = data ['apellido'];
+                                this.ci = data ['ci'];
+                                this.direccion = data ['direccion'];
+                                this.telefono = data ['telefono'];
+                                this.usuario = data ['usuario'];
+                                this.password = data ['password'];
                                 break;
                             }
                         }
@@ -377,7 +397,7 @@
             }
         },
         mounted() {
-            this.listarSalon(1,this.buscar,this.criterio);
+            this.listarCliente(1,this.buscar,this.criterio);
         }
     }
 </script>

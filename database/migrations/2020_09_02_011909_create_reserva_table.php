@@ -17,14 +17,15 @@ class CreateReservaTable extends Migration
             $table->id();
             $table->foreignId('idCliente');
             $table->foreignId('idSalon');
-            $table->foreignId('idPaqueteItem');
+            
             $table->date('fecha');
-            $table->float('pago',8,2);
+            $table->double('pago',8,2);
             $table->string('estado',50);
-           
+            $table->datetime('fechaInicio',0);
+            $table->datetime('fechaFin',0);
             $table->foreign('idCliente')->references('id')->on('cliente');
             $table->foreign('idSalon')->references('id')->on('salon');
-            $table->foreign('idPaqueteItem')->references('id')->on('paqueteitem');
+            
         });
     }
 

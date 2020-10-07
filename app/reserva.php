@@ -10,10 +10,12 @@ class reserva extends Model
     protected $fillable =[
         'idCliente',
         'idSalon',
-        'idPaqueteItem',
+        
         'fecha',
         'pago',
-        'estado'
+        'estado',
+        'fechaInicio',
+        'fechaFin'
         
     ];
     public $timestamps=false;

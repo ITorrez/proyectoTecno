@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDetallenotapaquetesTable extends Migration
+class CreateDetallereservasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreateDetallenotapaquetesTable extends Migration
      */
     public function up()
     {
-        Schema::create('detallenotapaquetes', function (Blueprint $table) {
+        Schema::create('detallereserva', function (Blueprint $table) {
             $table->id();
-            // $table->integer('cantidad');
-            // $table->double('subTotal',18,2);
-            $table->foreignId('idNotaservicio');
+            $table->foreignId('idReserva');
             $table->foreignId('idPaqueteitem');
             
-            $table->foreign('idNotaservicio')->references('id')->on('notaservicio');
+            $table->foreign('idReserva')->references('id')->on('reserva');
             $table->foreign('idPaqueteitem')->references('id')->on('paqueteitem');
         });
     }
@@ -32,6 +30,6 @@ class CreateDetallenotapaquetesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('detallenotapaquetes');
+        Schema::dropIfExists('detallereservas');
     }
 }

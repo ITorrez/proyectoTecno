@@ -13,8 +13,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('/sistema', function () {
     return view('contenido/contenido');
+});
+
+Route::get('/clientes', function () {
+    return view('layouts/app');
+});
+
+Route::get('/reservas', function () {
+    return view('cliente/reserva/index');
 });
 
 Auth::routes();
@@ -48,6 +56,7 @@ Route::get('/salon', 'ctrlSalon@index');
 Route::post('/salon/guardar', 'ctrlSalon@guardar');
 Route::put('/salon/actualizar', 'ctrlSalon@actualizar');
 Route::delete('/salon/eliminar_{id}', 'ctrlSalon@eliminar');
+Route::get('/salon/mostrar_{id}', 'ctrlSalon@mostrar');
 Route::get('/salon/todos', 'ctrlSalon@todos');
 
 /*Rutas de Bitacora*/
@@ -65,9 +74,15 @@ Route::put('/paquete/actualizar', 'ctrlPaquete@actualizar');
 Route::delete('/paquete/eliminar_{id}', 'ctrlPaquete@eliminar');
 Route::get('/paquete/todos', 'ctrlPaquete@todos');
 
+/*NOTA SERVICIO */
 Route::get('/notaservicio/get_{id}', 'ctrlNotaServicio@getBy');
 Route::post('/notaservicio/guardar','ctrlNotaServicio@guardar');
 Route::get('/notaservicio','ctrlNotaServicio@index');
+
+/*RESERVA */
+Route::get('/reserva/get_{id}', 'ctrlReserva@getBy');
+Route::get('/reserva','ctrlReserva@index');
+Route::post('/reserva/guardar','ctrlReserva@guardar');
 
 /*Cliente*/
 Route::get('/cliente','ctrlCliente@index');
@@ -86,3 +101,5 @@ Route::put('/empleado/actualizar', 'ctrlEmpleado@actualizar');
 Route::delete('/empleado/eliminar_{id}', 'ctrlEmpleado@eliminar');
 Route::get('/empleado/selectEmpleado', 'ctrlEmpleado@selectEmpleado');
 Route::get('/empleado/todos', 'ctrlEmpleado@todos');
+
+

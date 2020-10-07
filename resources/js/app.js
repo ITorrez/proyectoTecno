@@ -30,6 +30,10 @@ Vue.component('frmempleado-component', require('./components/frmEmpleado').defau
 Vue.component('frmitem-component', require('./components/frmItem').default);
 Vue.component('FrmNewItem-component', require('./components/FrmNewItem').default);
 Vue.component('frmnotaservicio-component', require('./components/FrmNotaServicio').default);
+// conponente para que el cliente haga su reserva,se registre y haga login
+Vue.component('frmclientereg-component', require('./components/frmClienteReg').default);
+Vue.component('frmreserva-component', require('./components/frmReserva').default);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

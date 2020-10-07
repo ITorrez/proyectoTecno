@@ -52,6 +52,7 @@ class ctrlSalon extends Controller
         $salon->descripcion=$request->descripcion;
         $salon->ubicacion=$request->ubicacion;
         $salon->estado=$request->estado;
+        $salon->precio=$request->precio;
         $salon->save();
     }
 
@@ -63,6 +64,7 @@ class ctrlSalon extends Controller
         $salon->descripcion=$request->descripcion;
         $salon->ubicacion=$request->ubicacion;
         $salon->estado=$request->estado;
+        $salon->precio=$request->precio;
         $salon->save();
     }
     public function eliminar($id)
@@ -72,8 +74,11 @@ class ctrlSalon extends Controller
     }
     public function todos(){
         //if (!$request->ajax()) return redirect('/');
-        $salon = salon::select("id","nombre")->get();
+        $salon = salon::select("id","nombre","precio")->get();
         return ['data' => $salon];
+    }
+    public function mostrar($id){
+        return ['data' => salon::findOrFail($id)];
     }
     
 }

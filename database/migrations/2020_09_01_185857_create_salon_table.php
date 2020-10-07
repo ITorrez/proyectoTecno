@@ -20,6 +20,7 @@ class CreateSalonTable extends Migration
             $table->string('descripcion',255);
             $table->string('ubicacion',255);
             $table->string('estado',50);
+            $table->double('precio',20,2);
         });
     }
 

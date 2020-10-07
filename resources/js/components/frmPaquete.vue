@@ -53,9 +53,9 @@
                     <button
                       type="button"
                       @click="abrirDatos(paquete.id)"
-                      class="btn btn-warning btn-sm"
+                      class="btn btn-info btn-sm"
                     >
-                      <i class="icon-pencil"></i>
+                      <i class="icon-info"></i>
                     </button> &nbsp;
                     <template>
                       <button
@@ -179,7 +179,7 @@
                 </tr>
               </thead>
               <tbody v-if="(data.detalle.length)">
-                <tr v-for="(detalle,index) in data.detalle" :key="detalle.id">
+                <tr v-for="(detalle,index) in data.detalle" :key="index">
                   <td>
                     <button
                       @click="eliminarDetalle(index)"
@@ -196,15 +196,19 @@
                       type="number"
                       step="0"
                       min="0"
+                      @keyup="validarStokMaximo(index)"
                       v-model="detalle.cantidad"
                       class="form-control"
                     />
+                    <!-- <span class="control-label" for="inputWarning" v-if="detalle.error!=undefined && detalle.stock<detalle.cantidad">Stock: {{ detalle.stock }}</span> -->
                   </td>
                   <td>
+
                     <input
+                      readonly
                       type="number"
                       step="0"
-                      min="0"
+                      min="0"                     
                       v-model="detalle.precio"
                       class="form-control"
                     />
@@ -341,6 +345,20 @@ export default {
     },
   },
   methods: {
+    validarStokMaximo(index){
+       
+       let c=this.data.detalle[index].cantidad;
+       let s=this.data.detalle[index].stock;
+      //  console.log(s,c,index);
+       if(c>s)
+       {
+        // alert('No puede poner una cantidad mayor al stock del producto');
+         this.data.detalle[index].cantidad=0;
+         var mensaje='Hay solo '+s+' disponibles en el stock';
+        this.eventoAlerta('error', mensaje);
+       }
+    },
+
     listarPaquete(page, buscar, criterio) {
       let me = this;
       var url =
@@ -420,8 +438,8 @@ export default {
         .post("/paquete/guardar", me.data)
         .then((res) => {
           me.eventoAlerta("success", "Guardado Exitosamente");
-          me.cerrarModal();
           me.listarPaquete(1, "", "acontecimiento");
+          this.listarRegistro = this.listarRegistro == true ? false : true;
         })
         .catch((error) => {
           console.log(error);
@@ -452,8 +470,10 @@ export default {
           idItem: this.selectedItem.id,
           nombre: this.selectedItem.nombre,
           cantidad: 0,
-          precio: 0,
+          precio: this.selectedItem.precio,
+          stock:this.selectedItem.stock,
           subTotal: 0,
+          error:'',
         });
       }
     },

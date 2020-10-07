@@ -13,7 +13,7 @@ class ctrlCliente extends Controller
      */
     public function index(Request $request)
     {
-        if (!$request->ajax()) return redirect('/');
+        // if (!$request->ajax()) return redirect('/');
         $buscar = $request->buscar;
         $criterio = $request->criterio;
          
@@ -21,7 +21,7 @@ class ctrlCliente extends Controller
             $cliente = cliente::orderBy('id', 'desc')->paginate(5);
         }
         else{
-            $cliente = cliente::where($criterio, 'like', '%'. $buscar . '%')->orderBy('id', 'desc')->paginate(5);
+            $cliente = cliente::where($criterio, 'like', '%'.$buscar.'%')->orderBy('id', 'desc')->paginate(5);
         }
         return [
             'pagination' => [

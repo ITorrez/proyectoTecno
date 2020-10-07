@@ -28,6 +28,7 @@
                     <table class="table table-bordered table-striped table-sm">
                         <thead>
                             <tr>
+                                <th>Opciones</th>
                                 <th>Nombre</th>
                                 <th>Apellido</th>
                                 <th>Ci</th>

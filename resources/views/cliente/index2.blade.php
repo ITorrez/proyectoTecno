@@ -71,7 +71,7 @@
             <!-- Fin del Sidebar-->
 
             <!-- Contenido Principal -->
-            @yield('cliente.contenido2')
+            @yield('contenido2')
             @if (Auth())
             @yield('login')
             

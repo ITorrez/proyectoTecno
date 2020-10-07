@@ -12,7 +12,8 @@ class salon extends Model
         'nombre',
         'descripcion',
         'ubicacion',
-        'estado'
+        'estado',
+        'precio'
     ];
     public $timestamps=false;
     public function reserva(){

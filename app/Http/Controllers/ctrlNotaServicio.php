@@ -50,14 +50,28 @@ class ctrlNotaServicio extends Controller
    public function getBy($id){
        $tabla=notaservicio::findOrFail($id);
 
+       $tabla['precioSalon']=notaservicio::join('salon','notaservicio.idSalon','salon.id')
+       
+       ->where('notaservicio.id',$id)
+       ->sum('salon.precio');
+    //    ->select('salon.precio as precioSalon')
+    //    ->first();
+       
        $tabla['detalle']=detallenotapaquete::join('paqueteitem as detItem',
        'detallenotapaquetes.idPaqueteitem','detItem.id')
        ->join('item','detItem.idItem','item.id')
+
+    //    ->join('notaservicio','detallenotapaquete.idNotaservicio','notaservicio.id')
+    //    ->join('salon','notaservicio.idSalon','salon.id')
+
         ->select('detallenotapaquetes.id','detallenotapaquetes.idPaqueteitem',
-        'detallenotapaquetes.cantidad'
-        ,'detallenotapaquetes.subTotal'
+        'detItem.cantidad'
+        ,'detItem.precio'
         ,'item.nombre'
-        ,DB::raw('detallenotapaquetes.subTotal/detallenotapaquetes.cantidad as precio'))
+
+        // ,'salon.precio as precioSalon'
+
+        ,DB::raw('detItem.precio*detItem.cantidad as subTotal'))
         ->where('detallenotapaquetes.idNotaservicio',$id)
         ->get();
 
@@ -109,8 +123,8 @@ class ctrlNotaServicio extends Controller
             $detalle = new detallenotapaquete();
             $detalle->idNotaservicio=$tabla->id;
             $detalle->idPaqueteitem=$det['id'];
-            $detalle->cantidad=$det['cantidad'];
-            $detalle->subTotal=$det['subTotal'];
+            // $detalle->cantidad=$det['cantidad'];
+            // $detalle->subTotal=$det['subTotal'];
             $detalle->save();
         }
         DB::commit();
