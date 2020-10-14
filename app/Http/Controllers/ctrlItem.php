@@ -16,12 +16,12 @@ class ctrlItem extends Controller
         if ($buscar==''){
             $item = item::join('tipoitem','item.idTipoItem','=', 'tipoitem.id')
             ->select('item.id','item.idTipoItem','tipoitem.descripcion as descripTpitem','item.foto','item.nombre','item.descripcion','item.precio','item.stock')
-            ->orderBy('item.id','desc')->paginate(3);
+            ->orderBy('item.id','desc')->paginate(20);
         }
         else{$item = item::join('tipoitem','item.idTipoItem','=', 'tipoitem.id')
             ->select('item.id','item.idTipoItem','tipoitem.descripcion','item.foto','item.nombre','item.descripcion','item.precio','item.stock')
             ->where('item.'.$criterio, 'like', '%'. $buscar . '%' ) 
-            ->orderBy('item.id','desc')->paginate(3);
+            ->orderBy('item.id','desc')->paginate(20);
         }
         return [
             'pagination' => [

@@ -18,7 +18,7 @@
             <li class="nav-item nav-dropdown">
                 <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-wallet"></i> Servicios</a>
                 <ul class="nav-dropdown-items">
-                    <li @click="menu=0" class="nav-item">
+                    <li @click="menu=12" class="nav-item">
                         <a class="nav-link" href="#"><i class="icon-wallet"></i> Reservas</a>
                     </li>
                     <li @click="menu=1" class="nav-item">

@@ -75,14 +75,29 @@ Route::delete('/paquete/eliminar_{id}', 'ctrlPaquete@eliminar');
 Route::get('/paquete/todos', 'ctrlPaquete@todos');
 
 /*NOTA SERVICIO */
+/*estados:
+  entregado    es cuando se entrega todo el paquete y salon al cliente
+  terminado    es cuando el cliente nos devuelve el paquete y salon*/
 Route::get('/notaservicio/get_{id}', 'ctrlNotaServicio@getBy');
 Route::post('/notaservicio/guardar','ctrlNotaServicio@guardar');
 Route::get('/notaservicio','ctrlNotaServicio@index');
+Route::put('/notaservicio/recibirnotaservicio_{id}', 'ctrlNotaServicio@recibirNotaServivio');
 
 /*RESERVA */
+/*estados:
+  reservado  es cuando el cliente hizo su reserva, el cleinte o el empleado pueden anular
+  entregado  es cuando se entrega todo el paquete y salon al cliente
+  terminado  es cuando el cliente nos devuelve el paquete y salon
+  anulado    es cuando anulan la reserva ya sea por el cliente o por el empleado*/
 Route::get('/reserva/get_{id}', 'ctrlReserva@getBy');
 Route::get('/reserva','ctrlReserva@index');
+/*enlista todas las reservas de todos los clientes */
+Route::get('/reservatodos','ctrlReserva@indextodos');
+
 Route::post('/reserva/guardar','ctrlReserva@guardar');
+Route::put('/reserva/anular_{id}','ctrlReserva@anularReserva');
+Route::put('/reserva/entregar_{id}','ctrlReserva@entregarReserva');
+Route::put('/reserva/recibirreserva_{id}','ctrlReserva@recibirPaqueteReserva');
 
 /*Cliente*/
 Route::get('/cliente','ctrlCliente@index');
@@ -90,7 +105,8 @@ Route::post('/cliente/guardar','ctrlCliente@guardar');
 Route::put('/cliente/actualizar','ctrlCliente@actualizar');
 Route::delete('/cliente/eliminar_{id}','ctrlCliente@eliminar');
 Route::get('/cliente/todos', 'ctrlCliente@todos');
-
+/*RUTA PARA EL LOGIN DEL CLIENTE */
+Route::post('/', 'ctrlCliente@login')->name('cliente.login');
 
 /*controlador Home*/
 Route::get('/home', 'HomeController@index')->name('home');

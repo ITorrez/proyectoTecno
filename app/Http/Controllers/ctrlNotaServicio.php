@@ -24,13 +24,13 @@ class ctrlNotaServicio extends Controller
             $notaserv = notaservicio::join('cliente','notaservicio.idCliente','=', 'cliente.id')
                                     ->join('empleado','notaservicio.idEmpleado','=','empleado.id')
                                     ->join('salon','notaservicio.idSalon','=','salon.id')
-            ->select('notaservicio.id','notaservicio.fecha','notaservicio.fechaInicio','notaservicio.fechaFin','notaservicio.montoTotal','cliente.nombre as nombrecli','empleado.nombre as nombreemp','salon.nombre as nombresalon')
+            ->select('notaservicio.id','notaservicio.fecha','notaservicio.fechaInicio','notaservicio.fechaFin','notaservicio.montoTotal','cliente.nombre as nombrecli','empleado.nombre as nombreemp','salon.nombre as nombresalon','notaservicio.estado as estadoserv')
             ->orderBy('notaservicio.id','desc')->paginate(20);
         }
         else{$notaserv = notaservicio::join('cliente','notaservicio.idCliente','=', 'cliente.id')
                                      ->join('empleado','notaservicio.idEmpleado','=','empleado.id')
                                      ->join('salon','notaservicio.idSalon','=','salon.id')
-            ->select('notaservicio.id','notaservicio.fecha','notaservicio.fechaInicio','notaservicio.fechaFin','notaservicio.montoTotal','cliente.nombre as nombrecli','empleado.nombre as nombreemp','salon.nombre as nombresalon')
+            ->select('notaservicio.id','notaservicio.fecha','notaservicio.fechaInicio','notaservicio.fechaFin','notaservicio.montoTotal','cliente.nombre as nombrecli','empleado.nombre as nombreemp','salon.nombre as nombresalon','notaservicio.estado as estadoserv')
             ->where('cliente.'.$criterio, 'like', '%'. $buscar . '%' ) 
             ->orderBy('notaservicio.id','desc')->paginate(20);
         }
@@ -148,6 +148,13 @@ class ctrlNotaServicio extends Controller
     {
         $paquete=paquete::find($id);
         $paquete->delete();
+    }
+
+    public function recibirNotaServivio($id)
+    {
+        $notaservicio = notaservicio::findOrFail($id);
+        $notaservicio->estado = 'terminado';
+        $notaservicio->save();  
     }
     
 }

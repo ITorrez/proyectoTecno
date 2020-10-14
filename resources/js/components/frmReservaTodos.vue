@@ -8,10 +8,10 @@
       <!-- Ejemplo de tabla Listado -->
       <div class="card">
         <div class="card-header">
-          <i class="fa fa-align-justify"></i>Nota de Servicio
-          <button type="button" @click="abrirDatos()" class="btn btn-secondary">
+          <i class="fa fa-align-justify"></i>Reservas
+          <!-- <button type="button" @click="abrirDatos()" class="btn btn-secondary">
             <i class="icon-plus"></i>&nbsp;Nuevo
-          </button>
+          </button> -->
         </div>
         <template v-if="listarRegistro">
           <div class="card-body">
@@ -29,7 +29,7 @@
                   />
                   <button
                     type="submit"
-                    @click="listarNotaSevicio(1,buscar,criterio)"
+                    @click="listarReserva(1,buscar,criterio)"
                     class="btn btn-primary"
                   >
                     <i class="fa fa-search"></i> Buscar
@@ -45,51 +45,60 @@
                   <th>Fecha</th>
                   <th>Fecha Inicio</th>
                   <th>Fecha Final</th>
-                  <th>Monto total</th>
+                  <th>Pago</th>
                   <th>Cliente</th>
-                  <th>Empleado</th>
+                  <!-- <th>Empleado</th> -->
                   <th>Salon</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="notaservicio in arrayNotaServicio" :key="notaservicio.id">
+                <tr v-for="reserva in arrayReserva" :key="reserva.id">
                   <td>
                     <button
                       type="button"
-                      @click="abrirDatos(notaservicio.id)"
+                      @click="abrirDatos(reserva.id)"
                       class="btn btn-info btn-sm"
                     >
                       <i class="icon-info"></i>
                     </button> &nbsp;
-                    <!-- <template>
+
+                    <template v-if="reserva.estadoreser == 'reservado'">
                       <button
                         type="button"
                         class="btn-danger btn-sm"
-                        @click="eliminarPaquete(notaservicio.id)"
+                        @click="anularReserva(reserva.id)"
                       >
-                        <i class="icon-trash"></i>
+                        <i class="fa fa-remove"></i>
                       </button>
-                    </template> -->
 
-                    <template v-if="notaservicio.estadoserv == 'entregado'">
+                      <button
+                        type="button"
+                        class="btn-success btn-sm"
+                        @click="entregarReserva(reserva.id)"
+                      >
+                      Entregar
+                      <!-- <i class="fa fa-exchange"></i> -->
+                      </button>
+                    </template>
+
+                    <template v-if="reserva.estadoreser == 'entregado'">
                       <button
                         type="button"
                         class="btn-primary btn-sm"
-                        @click="recibirNotaservicio(notaservicio.id)"
+                        @click="recibirpaqueteReserva(reserva.id)"
                       >
-                      Recibir
-                        <!-- <i class="icon-refresh"></i> -->
+                        Recibir
                       </button>
-                      </template>
+                    </template>
                   </td>
-                  <td v-text="notaservicio.id"></td>
-                  <td v-text="notaservicio.fecha"></td>
-                  <td v-text="notaservicio.fechaInicio"></td>
-                  <td v-text="notaservicio.fechaFin"></td>
-                  <td v-text="notaservicio.montoTotal"></td>
-                  <td v-text="notaservicio.nombrecli"></td>
-                  <td v-text="notaservicio.nombreemp"></td>
-                  <td v-text="notaservicio.nombresalon"></td>
+                  <td v-text="reserva.id"></td>
+                  <td v-text="reserva.fecha"></td>
+                  <td v-text="reserva.fechaInicio"></td>
+                  <td v-text="reserva.fechaFin"></td>
+                  <td v-text="reserva.pago"></td>
+                  <td v-text="reserva.nombrecli"></td>
+                  <!-- <td v-text="reserva.nombreemp"></td> -->
+                  <td v-text="reserva.nombresalon"></td>
                 
                 </tr>
               </tbody>
@@ -139,11 +148,11 @@
                     <br />
                   </label>
                   <input
-                    type="date"
                     readonly
+                    type="date"
                     v-model="data.fecha"
                     class="form-control"
-                   
+                    placeholder=""
                   />
                 </div>
 
@@ -189,8 +198,10 @@
 
               </div>
               <div class="col-md-6">
-                <div class="form-group">
-                  <label>Empleado</label>
+                <!-- <div class="form-group">
+                  <label>Empleado</label> -->
+
+
                   <!-- <v-select
                     :options="arrayEmpleado"
                     label="nombre"
@@ -198,14 +209,17 @@
                     :selectedValue="selectedTipo"
                     :getOptionKey="seleccionadoTipo"
                   /> -->
-                  <select class="form-control" v-model="data.idEmpleado">
+
+                  <!-- <select class="form-control" v-model="data.idEmpleado">
                       <option value="0" disabled>Seleccione Empleado</option>
                       <option v-for="obj in arrayEmpleado" :key="obj.id" :value="obj.id" >{{ obj.nombre }}</option>
                     </select>  
-                </div>
+                </div> -->
 
-                <div class="form-group">
-                  <label>Cliente</label>
+                <!-- <div class="form-group">
+                  <label>Cliente</label> -->
+
+
                   <!-- <v-select
                     :options="arrayCliente"
                     label="nombre"
@@ -213,11 +227,13 @@
                     :selectedValue="selectedTipo"
                     :getOptionKey="seleccionadoTipo"
                   /> -->
-                   <select class="form-control" v-model="data.idCliente">
+
+
+                   <!-- <select class="form-control" v-model="data.idCliente">
                       <option value="0" disabled>Seleccione Cliente</option>
                       <option v-for="obj in arrayCliente" :key="obj.id" :value="obj.id" >{{ obj.nombre }}</option>
                     </select>  
-                </div>
+                </div> -->
 
                 <div class="form-group">
                   <label>Salon</label>
@@ -348,7 +364,7 @@
                   v-if="tipoAccion==1"
                   class="btn btn-primary"
                   @click="guardar()"
-                >Guardar</button>
+                >Guardar Reserva</button>
                 <!-- <button
                   type="button"
                   v-if="tipoAccion==2"
@@ -448,10 +464,13 @@ import vSelect from "vue-select";
 Vue.component("v-select", vSelect);
 import "vue-select/dist/vue-select.css";
 export default {
+   props:{
+            usuario:parseInt(),
+        },
   data() {
     return {
       arrayLista:[],
-      arrayNotaServicio:[],
+      arrayReserva:[],
       
       data: {
         id: 0,
@@ -461,10 +480,10 @@ export default {
         fecha:'',
         fechaInicio:'',
         fechaFin:'',
-        montoTotal:0,
+        pago:0,
         estado:'',
-        precioSalon:0,
         detalle: [],
+        precioSalon:0,
         
       },
       cantidad: 0,
@@ -495,7 +514,7 @@ export default {
         nombre: "",
       },
       listarRegistro: true,
-      // precioSalon:0,
+     // precioSalon:0,
       totalDiasServicioPaquete:1,
     };
   },
@@ -528,15 +547,15 @@ export default {
     },
 
     calcularMonto() {
-      this.data.montoTotal = 0;
+      this.data.pago = 0;
       if (this.data.detalle.length > 0) {
         this.data.detalle.forEach((x) => {
-          this.data.montoTotal = this.data.montoTotal + x.precio * x.cantidad;
+          this.data.pago = this.data.pago + x.precio * x.cantidad;
           x.subTotal=x.precio * x.cantidad;
         });
       }
-       this.data.montoTotal=(this.data.montoTotal + this.data.precioSalon)* this.totalDiasServicioPaquete;
-       return this.data.montoTotal;
+       this.data.pago=(this.data.pago + this.data.precioSalon)* this.totalDiasServicioPaquete;
+       return this.data.pago;
     },
   },
   methods: {
@@ -571,15 +590,15 @@ export default {
           console.log(error);
         });
     },
-    listarNotaSevicio(page, buscar, criterio) {
+    listarReserva(page, buscar, criterio) {
       let me = this;
       var url =
-        "/notaservicio?page=" + page + "&buscar=" + buscar + "&criterio=" + criterio;
+        "/reservatodos?page=" + page + "&buscar=" + buscar + "&criterio=" + criterio;
       axios
         .get(url)
         .then(function (response) {
           var respuesta = response.data;
-          me.arrayNotaServicio = respuesta.notaserv.data;
+          me.arrayReserva = respuesta.reserv.data;
           me.pagination = respuesta.pagination;
         })
         .catch(function (error) {
@@ -664,7 +683,7 @@ mostrarPaqueteDetalle(id){
       //Actualiza la página actual
       me.pagination.current_page = page;
       //Envia la petición para visualizar la data de esa página
-      me.listarNotaSevicio(page, buscar, criterio);
+      me.listarReserva(page, buscar, criterio);
     },
     guardar() {
       //   if (this.validarPaquete()) {
@@ -672,10 +691,10 @@ mostrarPaqueteDetalle(id){
       //   }
       let me = this;
       axios
-        .post("/notaservicio/guardar", me.data)
+        .post("/reserva/guardar", me.data)
         .then((res) => {
-          me.eventoAlerta("success", "Nota Servicio Guardado Exitosamente");
-          me.listarNotaSevicio(1,'','nombre');
+          me.eventoAlerta("success", "Reserva Guardado Exitosamente");
+          me.listarReserva(1,'','nombre');
           this.listarRegistro = this.listarRegistro == true ? false : true;
           //me.listar(1, "", "acontecimiento");
           
@@ -687,7 +706,7 @@ mostrarPaqueteDetalle(id){
     mostrar(id) {
       let me = this;
       var url =
-        "/notaservicio/get_"+id;
+        "/reserva/get_"+id;
       axios
         .get(url)
         .then(res=> {
@@ -709,7 +728,7 @@ mostrarPaqueteDetalle(id){
         fecha:'',
         fechaInicio:'',
         fechaFin:'',
-        montoTotal:0,
+        pago:0,
         estado:'',
         detalle: [],
       };
@@ -749,7 +768,7 @@ mostrarPaqueteDetalle(id){
       this.listarClientes();
       this.listarSalon();
       this.data.fecha=moment().format('YYYY-MM-DD');
-      this.data.estado='entregado';
+      this.data.estado='reservado';
       if (id > 0) {
         this.mostrar(id);
       }
@@ -774,9 +793,9 @@ mostrarPaqueteDetalle(id){
           console.log(error);
         });
     },
-    recibirNotaservicio(id) {
+    anularReserva(id) {
       swal({
-        title: "Se Recibira el Paquete y Salon de la nota de servicio",
+        title: "Esta seguro de anular la reserva ?",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -792,13 +811,82 @@ mostrarPaqueteDetalle(id){
           let me = this;
 
           axios
-            .put("/notaservicio/recibirnotaservicio_" + id, {
+            .put("/reserva/anular_" + id, {
               id: id,
             })
             .then(function (response) {
-             
-              me.listarNotaSevicio(1,'','nombre');
-              swal("Recibido!", "El paquete y salon se recibieron con exito.", "success");
+               me.listarReserva(1,'','nombre');
+              swal("Anulado!", "La reserva se anulo con exito.", "success");
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        } else if (
+          // Read more about handling dismissals
+          result.dismiss === swal.DismissReason.cancel
+        ) {
+        }
+      });
+    },
+    entregarReserva(id) {
+      swal({
+        title: "Se entregara la Reserva, esta seguro ?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Aceptar!",
+        cancelButtonText: "Cancelar",
+        confirmButtonClass: "btn btn-success",
+        cancelButtonClass: "btn btn-danger",
+        buttonsStyling: false,
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.value) {
+          let me = this;
+
+          axios
+            .put("/reserva/entregar_" + id, {
+              id: id,
+            })
+            .then(function (response) {
+               me.listarReserva(1,'','nombre');
+              swal("Entregado!", "La reserva se entrego con exito.", "success");
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        } else if (
+          // Read more about handling dismissals
+          result.dismiss === swal.DismissReason.cancel
+        ) {
+        }
+      });
+    },
+    recibirpaqueteReserva(id) {
+      swal({
+        title: "Se Recibira el Paquete y Salon de la reserva",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Aceptar!",
+        cancelButtonText: "Cancelar",
+        confirmButtonClass: "btn btn-success",
+        cancelButtonClass: "btn btn-danger",
+        buttonsStyling: false,
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.value) {
+          let me = this;
+
+          axios
+            .put("/reserva/recibirreserva_" + id, {
+              id: id,
+            })
+            .then(function (response) {
+               me.listarReserva(1,'','nombre');
+              swal("Recibido!", "Se recibio el paquete y salon de la reserva", "success");
             })
             .catch(function (error) {
               console.log(error);
@@ -872,7 +960,7 @@ mostrarPaqueteDetalle(id){
     },
   },
   mounted() {
-    this.listarNotaSevicio(1,this.buscar,this.criterio);
+    this.listarReserva(1,this.buscar,this.criterio);
   },
 };
 </script>

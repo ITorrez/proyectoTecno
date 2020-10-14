@@ -75,6 +75,10 @@
                 </ul> --}}
             </li>
             @endif
+
+            {{-- @if(Auth()->cliente())
+            <label>Usuario: {{ Auth()->cliente()->nombre }}</label>
+            @endif --}}
       
 
 

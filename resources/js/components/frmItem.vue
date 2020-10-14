@@ -22,7 +22,7 @@
                                 <option value="tabla">Nombre de la Tabla</option>
                                 </select>
                                 <input type="text" v-model="buscar"  class="form-control" placeholder="Texto a buscar">
-                                <button type="submit" @click="listarBitacora(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                <button type="submit" @click="listarItem(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                             </div>
                         </div>
                     </div>
@@ -31,7 +31,7 @@
                             <tr>
                                 <th>Opciones</th>
                                 <th>Nombre</th>
-                                <th>Foto</th>
+                                <th style="display:none">Foto</th>
                                 <th>Descripcion</th>
                                 <th>Precio</th>
                                 <th>Stock</th>
@@ -42,17 +42,17 @@
                         <tbody>
                             <tr v-for="item in arrayItem" :key="item.id">
                                 <td>
-                                    <button type="button" @click="abrirModal('bitacora','actualizar',bitacora)" class="btn btn-warning btn-sm">
+                                    <button type="button" @click="abrirModal('item','actualizar',item)" class="btn btn-warning btn-sm">
                                     <i class="icon-pencil"></i>
                                     </button> &nbsp;
                                     <template >
-                                       <button type="button" class="btn-danger btn-sm" @click="eliminarBitacora(bitacora.id)">
+                                       <button type="button" class="btn-danger btn-sm" @click="eliminarItem(item.id)">
                                            <i class="icon-trash"></i>
                                        </button>
                                     </template>
                                 </td>
                                 <td v-text="item.nombre"></td>
-                                <td v-text="item.foto"></td>
+                                <td style="display:none" v-text="item.foto"></td>
                                 <td v-text="item.descripcion"></td>
                                 <td v-text="item.precio"></td>
                                 <td v-text="item.stock"></td>
@@ -100,9 +100,9 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label class="col-md-3 form-control-label" for="email-input">Foto</label>
+                                <!-- <label class="col-md-3 form-control-label" for="email-input">Foto</label> -->
                                 <div class="col-md-9">
-                                    <input type="text" v-model="foto" class="form-control" placeholder="foto">
+                                    <input type="hidden" v-model="foto" class="form-control" placeholder="foto">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -144,7 +144,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
                         <button type="button" v-if="tipoAccion==1" class="btn btn-primary" @click="guardarItem()" >Guardar</button>
-                        <button type="button" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarBitacora()" >Actualizar</button>
+                        <button type="button" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarItem()" >Actualizar</button>
                     </div>
                 </div>
                 <!-- /.modal-content -->
@@ -160,6 +160,8 @@
 </template>
 
 <script>
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import "sweetalert2/src/sweetalert2.scss";
     export default {
         data () {
             return {
@@ -227,7 +229,7 @@
             }
         },
         methods :{
-            listarBitacora(page,buscar,criterio){
+            listarItem(page,buscar,criterio){
                 let me=this;
                 var url= '/item?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
                 axios.get(url).then(function (response) {
@@ -256,7 +258,7 @@
                 //Actualiza la página actual
                 me.pagination.current_page = page;
                 //Envia la petición para visualizar la data de esa página
-                me.listarBitacora(page,buscar,criterio);
+                me.listarItem(page,buscar,criterio);
             },
             guardarItem(){
                 // if (this.validarBitacora()){
@@ -273,7 +275,8 @@
 
                 }) .then(function(response){
                     me.cerrarModal();
-                    me.listarBitacora(1,'','fecha');
+                    swal("Exelente!", "Se registro con con exito.", "success");
+                    me.listarItem(1,'','fecha');
 
                 }).catch(function(error){
                     console.log(error);
@@ -281,31 +284,32 @@
                 });
 
             },
-            actualizarBitacora(){
-                 if (this.validarBitacora()){
-                    return;
-                }
+            actualizarItem(){
+                //  if (this.validarBitacora()){
+                //     return;
+                // }
                 let me = this;
-                axios.put('/bitacora/actualizar',{
-                    'idEmpleado' : this.empleado_id,
-                    'fecha' : this.fecha,
-                    'hora' : this.hora,
-                    'tabla' : this.tabla,
-                    'codigoTabla' : this.codigoTabla,
-                    'transaccion' : this.transaccion,
-                    'id': this.bitacora_id
+                axios.put('/item/actualizar',{
+                    'idTipoItem' : this.tipoitem_id,
+                    'nombre' : this.nombre,
+                    'foto' : this.foto,
+                    'descripcion' : this.descripcion,
+                    'precio' : this.precio,
+                    'stock' : this.stock,
+                    'id': this.item_id
 
                 }) .then(function(response){
                     me.cerrarModal();
-                    me.listarBitacora(1,'','fecha');
+                    swal("Exelente!", "Se actualizo con con exito.", "success");
+                    me.listarItem(1,'','fecha');
 
                 }).catch(function(error){
                     console.log(error);
 
                 });
-            },eliminarBitacora(id){
+            },eliminarItem(id){
                  swal({
-                title: 'Esta seguro de eliminar esta Bitacora?',
+                title: 'Esta seguro de eliminar este Item?',
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -320,10 +324,10 @@
                 if (result.value) {
                     let me = this;
 
-                    axios.delete('/bitacora/eliminar_' + id,{
+                    axios.delete('/item/eliminar_' + id,{
                         'id': id
                     }).then(function (response) {
-                        me.listarBitacora(1,'','fecha');
+                        me.listarItem(1,'','fecha');
                         swal(
                         'Eliminado!',
                         'El registro ha sido eliminado con exito.',
@@ -375,7 +379,7 @@
                                 this.tituloModal = 'Registar Item';
                                 this.tipoitem_id=0;
                                 this.nombre = '';
-                                this.foto = '';
+                                this.foto = 'foto';
                                 this.descripcion='';
                                 this.precio='';
                                 this.stock='';
@@ -386,15 +390,15 @@
                             {
                                 //console.log(data);
                                 this.modal=1;
-                                this.tituloModal='Actualizar Bitacora';
+                                this.tituloModal='Actualizar Item';
                                 this.tipoAccion=2;
-                                this.bitacora_id=data['id'];
-                                this.empleado_id=data['idEmpleado'];
-                                this.fecha = data ['fecha'];
-                                this.hora = data ['hora'];
-                                this.tabla = data ['tabla'];
-                                this.codigoTabla = data ['codigoTabla'];
-                                this.transaccion = data ['transaccion'];
+                                this.item_id =data['id'];
+                                this.tipoitem_id=data['idTipoItem'];
+                                this.nombre = data ['nombre'];
+                                this.foto = data ['foto'];
+                                this.descripcion = data ['descripcion'];
+                                this.precio = data ['precio'];
+                                this.stock = data ['stock'];
                                 break;
                             }
                         }
@@ -406,7 +410,7 @@
             }
         },
         mounted() {
-            this.listarBitacora(1,this.buscar,this.criterio);
+            this.listarItem(1,this.buscar,this.criterio);
         }
     }
 </script>

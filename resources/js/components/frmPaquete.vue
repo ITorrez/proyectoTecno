@@ -19,7 +19,7 @@
               <div class="col-md-6">
                 <div class="input-group">
                   <select class="form-control col-md-3" id="opcion" v-model="criterio">
-                    <option value="acontecimiento">Acontecimiento</option>
+                    <option value="acontecimiento">nombre</option>
                   </select>
                   <input
                     type="text"
@@ -41,8 +41,8 @@
               <thead>
                 <tr>
                   <th>Opciones</th>
-                  <th>Acontecimiento</th>
-                  <th>Nombre del Paquete</th>
+                  <th>Nombre Paquete</th>
+                  <th>Tipo de Paquete</th>
                   
                   <th>Precio</th>
                 </tr>
@@ -122,7 +122,7 @@
                     type="text"
                     v-model="data.acontecimiento"
                     class="form-control"
-                    placeholder="Descripcion"
+                    placeholder="Nombre"
                   />
                 </div>
               </div>

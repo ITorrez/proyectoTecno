@@ -61,13 +61,13 @@
                     >
                       <i class="icon-info"></i>
                     </button> &nbsp;
-                    <template>
+                    <template v-if="reserva.estadoreser == 'reservado'">
                       <button
                         type="button"
                         class="btn-danger btn-sm"
                         @click="eliminarPaquete(reserva.id)"
                       >
-                        <i class="icon-trash"></i>
+                        <i class="fa fa-remove"></i>
                       </button>
                     </template>
                   </td>
@@ -128,6 +128,7 @@
                     <br />
                   </label>
                   <input
+                    readonly
                     type="date"
                     v-model="data.fecha"
                     class="form-control"
@@ -163,12 +164,12 @@
                 </div>
 
                 <div class="form-group">
-                  <label for>
+                  <!-- <label for>
                     Estado
                     <br />
-                  </label>
+                  </label> -->
                   <input
-                    type="text"
+                    type="hidden"
                     v-model="data.estado"
                     class="form-control"
                     placeholder="Estado"
@@ -746,6 +747,8 @@ mostrarPaqueteDetalle(id){
       this.listarEmpleados();
       this.listarClientes();
       this.listarSalon();
+      this.data.fecha=moment().format('YYYY-MM-DD');
+      this.data.estado='reservado';
       if (id > 0) {
         this.mostrar(id);
       }
@@ -772,7 +775,7 @@ mostrarPaqueteDetalle(id){
     },
     eliminarPaquete(id) {
       swal({
-        title: "Esta seguro de eliminar el Paquete?",
+        title: "Esta seguro de anular la reserva ?",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -788,12 +791,12 @@ mostrarPaqueteDetalle(id){
           let me = this;
 
           axios
-            .delete("/paquete/eliminar_" + id, {
+            .put("/reserva/anular_" + id, {
               id: id,
             })
             .then(function (response) {
-              me.listar(1, "", "acontecimiento");
-              swal("Eliminado!", "El  ha sido eliminado con exito.", "success");
+               me.listarReserva(1,'','nombre');
+              swal("Anulado!", "La reserva se anulo con exito.", "success");
             })
             .catch(function (error) {
               console.log(error);

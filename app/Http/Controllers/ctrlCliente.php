@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\cliente;
 class ctrlCliente extends Controller
@@ -75,6 +75,42 @@ class ctrlCliente extends Controller
         //if (!$request->ajax()) return redirect('/');
         $cliente = cliente::select("id","nombre")->get();
         return ['data' => $cliente];
+    }
+
+    public function login(Request $request)
+    {
+        //PARA VERIFICAR SI LOS DATOS SE ENVIAN
+      //return dd($request->all()); 
+      $data=request()->validate([
+          'usuario'=>'required',
+          'password'=>'required'
+      ],
+      [
+          'usuario.required'=>'Ingrese Usuario',
+          'password.required'=>'Ingrese Password',
+      ]);
+      if (Auth::attempt($data)) 
+      {
+          $con='Ok';
+      }
+      $usuario=$request->get('usuario');
+      $query=cliente::where('usuario','=',$usuario)->get();
+      if ($query->count()!=0) 
+      {
+        $passwordbd=$query[0]->password;
+        $passwordForm=$request->get('password');
+        if ($passwordbd==$passwordForm) 
+        {
+           return view('home');
+        }
+        else 
+        {
+            return back()->withErrors(['password'=>'Contraseña no valida'])->withInput([request('password')]);
+        }
+      }
+      else {
+        return back()->withErrors(['usuario'=>'usuario no valida'])->withInput([request('usuario')]);
+      }
     }
     
 }

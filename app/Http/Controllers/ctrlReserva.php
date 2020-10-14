@@ -19,13 +19,46 @@ class ctrlReserva extends Controller
         if ($buscar==''){
             $reserva = reserva::join('cliente','reserva.idCliente','=', 'cliente.id')
                                     ->join('salon','reserva.idSalon','=','salon.id')
-            ->select('reserva.id','reserva.fecha','reserva.fechaInicio','reserva.fechaFin','reserva.pago','cliente.nombre as nombrecli','salon.nombre as nombresalon')
+            ->select('reserva.id','reserva.fecha','reserva.fechaInicio','reserva.fechaFin','reserva.pago','cliente.nombre as nombrecli','salon.nombre as nombresalon','reserva.estado as estadoreser')
             ->where('cliente.id','=', Auth()->user()->id)
             ->orderBy('reserva.id','desc')->paginate(20);
         }
         else{$reserva = reserva::join('cliente','reserva.idCliente','=', 'cliente.id')
                                      ->join('salon','reserva.idSalon','=','salon.id')
-            ->select('reserva.id','reserva.fecha','reserva.fechaInicio','reserva.fechaFin','reserva.pago','cliente.nombre as nombrecli','salon.nombre as nombresalon')
+            ->select('reserva.id','reserva.fecha','reserva.fechaInicio','reserva.fechaFin','reserva.pago','cliente.nombre as nombrecli','salon.nombre as nombresalon','reserva.estado as estadoreser')
+            ->where('cliente.'.$criterio, 'like', '%'. $buscar . '%' ) 
+            ->orderBy('reserva.id','desc')->paginate(20);
+        }
+        return [
+            'pagination' => [
+                'total'        => $reserva->total(),
+                'current_page' => $reserva->currentPage(),
+                'per_page'     => $reserva->perPage(),
+                'last_page'    => $reserva->lastPage(),
+                'from'         => $reserva->firstItem(),
+                'to'           => $reserva->lastItem(),
+            ],
+            'reserv' =>$reserva
+        ];
+    }
+
+
+    public function indextodos(Request $request)
+    {
+        // if (!$request->ajax()) return redirect ('/');
+
+        $buscar = $request->buscar;
+        $criterio = $request->criterio;
+        if ($buscar==''){
+            $reserva = reserva::join('cliente','reserva.idCliente','=', 'cliente.id')
+                                    ->join('salon','reserva.idSalon','=','salon.id')
+            ->select('reserva.id','reserva.fecha','reserva.fechaInicio','reserva.fechaFin','reserva.pago','cliente.nombre as nombrecli','salon.nombre as nombresalon','reserva.estado as estadoreser')
+            ->where('reserva.estado','<>','anulado' )
+            ->orderBy('reserva.id','desc')->paginate(20);
+        }
+        else{$reserva = reserva::join('cliente','reserva.idCliente','=', 'cliente.id')
+                                     ->join('salon','reserva.idSalon','=','salon.id')
+            ->select('reserva.id','reserva.fecha','reserva.fechaInicio','reserva.fechaFin','reserva.pago','cliente.nombre as nombrecli','salon.nombre as nombresalon','reserva.estado as estadoreser')
             ->where('cliente.'.$criterio, 'like', '%'. $buscar . '%' ) 
             ->orderBy('reserva.id','desc')->paginate(20);
         }
@@ -108,6 +141,28 @@ class ctrlReserva extends Controller
          ->get();
  
          return $tabla;
+    }
+
+    public function anularReserva($id)
+    {
+        $reserva = reserva::findOrFail($id);
+        $reserva->estado = 'anulado';
+        $reserva->save();  
+    }
+   #se entrega la reserva al cliente 
+    public function entregarReserva($id)
+    {
+        $reserva = reserva::findOrFail($id);
+        $reserva->estado = 'entregado';
+        $reserva->save();  
+    }
+
+    #el cliente entrega el paquete y el salon de la reserva 
+    public function recibirPaqueteReserva($id)
+    {
+        $reserva = reserva::findOrFail($id);
+        $reserva->estado = 'terminado';
+        $reserva->save();  
     }
  
 }
