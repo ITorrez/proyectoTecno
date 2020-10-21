@@ -94,9 +94,18 @@
                             <div class="form-group row">
                                 <label class="col-md-3 form-control-label" for="email-input">Foto</label>
                                 <div class="col-md-9">
-                                    <input type="text" v-model="foto" class="form-control" placeholder="foto">
+                                    <input type="file" @change="imageChanged"  class="form-control" placeholder="foto">
                                 </div>
                             </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-9">
+                                <figure style="display:none;">
+                                    <img width="100" height="30" :src="imagen" alt="Foto del salon" >
+                                </figure>
+                                </div>
+                            </div>
+
                             <div class="form-group row">
                                 <label class="col-md-3 form-control-label" for="email-input">Nombre</label>
                                 <div class="col-md-9">
@@ -116,9 +125,9 @@
                                 </div>
                             </div>
                              <div class="form-group row">
-                                <label class="col-md-3 form-control-label" for="email-input">Estado</label>
+                                <!-- <label class="col-md-3 form-control-label" for="email-input">Estado</label> -->
                                 <div class="col-md-9">
-                                    <input type="text" v-model="estado" class="form-control" placeholder="estado">
+                                    <input type="hidden" v-model="estado" class="form-control" placeholder="estado">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -158,12 +167,13 @@
     export default {
         data () {
             return {
+                imagenMiniatura:'',
                 salon_id: 0,
                 foto:'',
                 nombre:'',
                 descripcion: '',
                 ubicacion: '',
-                estado: '',
+                estado: 'activo',
                 arraySalon: [],
                 modal : 0,
                 tituloModal : '',
@@ -185,6 +195,9 @@
             }
         },
         computed:{
+            imagen(){
+                return this.imagenMiniatura;
+            },
             isActived: function(){
                 return this.pagination.current_page;
             },
@@ -214,6 +227,29 @@
             }
         },
         methods :{
+            imageChanged(e) {
+                console.log(e.target.files[0]);
+                var fileReader = new FileReader();
+                fileReader.readAsDataURL(e.target.files[0]);
+                fileReader.onload = e => {
+                    this.foto = e.target.result;
+                    
+                };
+                console.log(this.foto);
+                },
+            ObtenerImagen(e){
+               let file=e.target.files[0];
+               this.foto=file;
+               this.cargarImagen(file);
+            },
+            cargarImagen(file){
+                 let reader=new FileReader();
+
+                 reader.onload=(e)=>{
+                     this.imagenMiniatura=e.target.result;
+                 }
+                 reader.readAsDataURL(file);
+            },
             listarSalon(page,buscar,criterio){
                 let me=this;
                 var url= '/salon?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
@@ -349,7 +385,7 @@
                                 this.nombre = '';
                                 this.descripcion = '';
                                 this.ubicacion='';
-                                this.estado='';
+                                this.estado='activo';
                                 this.precio='';
                                 this.tipoAccion = 1;
                                 break;

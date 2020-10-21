@@ -107,6 +107,9 @@ Route::delete('/cliente/eliminar_{id}','ctrlCliente@eliminar');
 Route::get('/cliente/todos', 'ctrlCliente@todos');
 /*RUTA PARA EL LOGIN DEL CLIENTE */
 Route::post('/', 'ctrlCliente@login')->name('cliente.login');
+/*CIERRE DE SESION PARA EL CLIENTE */
+Route::post('/logout', 'ctrlCliente@logoutcliente')->name('cliente.logout');
+
 
 /*controlador Home*/
 Route::get('/home', 'HomeController@index')->name('home');
@@ -117,5 +120,9 @@ Route::put('/empleado/actualizar', 'ctrlEmpleado@actualizar');
 Route::delete('/empleado/eliminar_{id}', 'ctrlEmpleado@eliminar');
 Route::get('/empleado/selectEmpleado', 'ctrlEmpleado@selectEmpleado');
 Route::get('/empleado/todos', 'ctrlEmpleado@todos');
-
+/*LOGIN PARA EL EMPLEADO */
+Route::get('empleado/login','ctrlEmpleado@ShowLoginForm');
+Route::post('empleado/login','ctrlEmpleado@loginempleado');
+/*CIERRE DE SESION PARA EL EMPLEADO */
+Route::post('/logoutemp', 'ctrlEmpleado@logoutempleado')->name('empleado.logout');
 

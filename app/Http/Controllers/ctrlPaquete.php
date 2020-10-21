@@ -8,6 +8,10 @@ use App\paqueteitem;
 use App\item;
 use DB;
 
+use App\bitacora;
+use DateTime;
+session_start();
+
 class ctrlPaquete extends Controller
 {
     /**
@@ -24,12 +28,12 @@ class ctrlPaquete extends Controller
         if ($buscar==''){
             $paquete = paquete::join('tipopaquete','paquete.idTipoPaquete','=', 'tipopaquete.id')
             ->select('paquete.id','paquete.idTipoPaquete','tipopaquete.nombre','paquete.acontecimiento','paquete.precio',)
-            ->orderBy('paquete.id','desc')->paginate(3);
+            ->orderBy('paquete.id','desc')->paginate(20);
         }
         else{$paquete = paquete::join('tipopaquete','paquete.idTipoPaquete','=', 'tipopaquete.id')
             ->select('paquete.id','paquete.idTipoPaquete','tipopaquete.nombre','paquete.acontecimiento','paquete.precio',)
             ->where('paquete.'.$criterio, 'like', '%'. $buscar . '%' ) 
-            ->orderBy('paquete.id','desc')->paginate(3);
+            ->orderBy('paquete.id','desc')->paginate(20);
         }
         return [
             'pagination' => [
@@ -59,6 +63,7 @@ class ctrlPaquete extends Controller
    public function todos(){
     //if (!$request->ajax()) return redirect('/');
     $lista = paquete::select('id','acontecimiento')
+    ->where("estado","=","activo")
     ->get();
     return $lista;
     }
@@ -89,6 +94,9 @@ class ctrlPaquete extends Controller
         $paquete->idTipoPaquete = $request->idTipoPaquete;
         $paquete->acontecimiento = $request->acontecimiento;
         $paquete->precio = $request->precio;
+
+        $paquete->estado = 'activo';
+
         $paquete->save();
         $detalles = $request->detalle;
         foreach($detalles as $det)
@@ -115,6 +123,19 @@ class ctrlPaquete extends Controller
         {
             DB::rollBack();
         }
+
+         /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+         $objdate = new DateTime();
+         $fechaactual= $objdate->format('Y-m-d');
+         $horaactual=$objdate->format('H:i:s');
+            $bitacora = new bitacora();
+            $bitacora->idEmpleado =  session('idemp');
+            $bitacora->fecha = $fechaactual;
+            $bitacora->hora = $horaactual;
+            $bitacora->tabla = 'paquete';
+            $bitacora->codigoTabla = $paquete->id;
+            $bitacora->transaccion = 'crear';
+            $bitacora->save();
     }
     public function actualizar(Request $request)
     {
@@ -128,8 +149,24 @@ class ctrlPaquete extends Controller
 
     public function eliminar($id)
     {
-        $paquete=paquete::find($id);
-        $paquete->delete();
+        $paqueteitem = paqueteitem::where('idPaquete','=', $id)->delete();
+        // $eliminar=paqueteitem::destroy($paqueteitem);
+        // $paqueteitem->delete();
+        // Users:where('created_at', $date)->delete();
+        // $paquete=paquete::find($id);
+        $paquete=paquete::where('id',$id)->delete();
+        /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+        $objdate = new DateTime();
+        $fechaactual= $objdate->format('Y-m-d');
+        $horaactual=$objdate->format('H:i:s');
+           $bitacora = new bitacora();
+           $bitacora->idEmpleado =  session('idemp');
+           $bitacora->fecha = $fechaactual;
+           $bitacora->hora = $horaactual;
+           $bitacora->tabla = 'paquete';
+           $bitacora->codigoTabla = $id;
+           $bitacora->transaccion = 'eliminar';
+           $bitacora->save();
     }
     
 }

@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use App\cliente;
+use App\bitacora;
+use DateTime;
+session_start();
 class ctrlCliente extends Controller
 {
     /**
@@ -52,6 +56,19 @@ class ctrlCliente extends Controller
         $cliente->usuario=$request->usuario;
         $cliente->password=$request->password;
         $cliente->save();
+
+         /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+         $objdate = new DateTime();
+         $fechaactual= $objdate->format('Y-m-d');
+         $horaactual=$objdate->format('H:i:s');
+            $bitacora = new bitacora();
+            $bitacora->idEmpleado =  session('idemp');
+            $bitacora->fecha = $fechaactual;
+            $bitacora->hora = $horaactual;
+            $bitacora->tabla = 'cliente';
+            $bitacora->codigoTabla = $cliente->id;
+            $bitacora->transaccion = 'crear';
+            $bitacora->save();
     }
 
     public function actualizar(Request $request)
@@ -65,11 +82,37 @@ class ctrlCliente extends Controller
         $cliente->usuario=$request->usuario;
         $cliente->password=$request->password;
         $cliente->save();
+
+        /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+        $objdate = new DateTime();
+        $fechaactual= $objdate->format('Y-m-d');
+        $horaactual=$objdate->format('H:i:s');
+           $bitacora = new bitacora();
+           $bitacora->idEmpleado =  session('idemp');
+           $bitacora->fecha = $fechaactual;
+           $bitacora->hora = $horaactual;
+           $bitacora->tabla = 'cliente';
+           $bitacora->codigoTabla = $request->id;
+           $bitacora->transaccion = 'actualizar';
+           $bitacora->save();
     }
     public function eliminar($id)
     {
         $cliente=cliente::find($id);
         $cliente->delete();
+
+        /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+        $objdate = new DateTime();
+        $fechaactual= $objdate->format('Y-m-d');
+        $horaactual=$objdate->format('H:i:s');
+           $bitacora = new bitacora();
+           $bitacora->idEmpleado =  session('idemp');
+           $bitacora->fecha = $fechaactual;
+           $bitacora->hora = $horaactual;
+           $bitacora->tabla = 'cliente';
+           $bitacora->codigoTabla = $id;
+           $bitacora->transaccion = 'eliminar';
+           $bitacora->save();
     }
     public function todos(){
         //if (!$request->ajax()) return redirect('/');
@@ -89,19 +132,25 @@ class ctrlCliente extends Controller
           'usuario.required'=>'Ingrese Usuario',
           'password.required'=>'Ingrese Password',
       ]);
-      if (Auth::attempt($data)) 
-      {
-          $con='Ok';
-      }
+    //   if (Auth::attempt($data)) 
+    //   {
+    //       $con='Ok';
+    //   }
       $usuario=$request->get('usuario');
       $query=cliente::where('usuario','=',$usuario)->get();
       if ($query->count()!=0) 
       {
         $passwordbd=$query[0]->password;
+        $idcli=$query[0]->id;
+        $nombrecli=$query[0]->nombre;
         $passwordForm=$request->get('password');
         if ($passwordbd==$passwordForm) 
         {
-           return view('home');
+           //return view('home');
+                //return view('../../contenido/contenido');
+                session(['nombrecli' => $nombrecli]);
+                session(['idcli' => $idcli]);
+                return redirect('/reservas');
         }
         else 
         {
@@ -111,6 +160,13 @@ class ctrlCliente extends Controller
       else {
         return back()->withErrors(['usuario'=>'usuario no valida'])->withInput([request('usuario')]);
       }
+    }
+
+    public function logoutcliente()
+    {
+        Auth::logout(); 
+        Session::flush(); 
+        return redirect('/clientes');
     }
     
 }

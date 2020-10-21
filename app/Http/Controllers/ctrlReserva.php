@@ -7,26 +7,46 @@ use App\reserva;
 use App\detallereserva;
 use DB;
 
+use App\paqueteitem;
+use App\paquete;
+use App\salon;
+use App\bitacora;
+use DateTime;
+session_start();
+
 class ctrlReserva extends Controller 
 {
-    
+             
+
     public function index(Request $request)
     {
+        $idclientelogin=0;
+               if (Auth()->user()) 
+               {
+                $idclientelogin=Auth()->user()->id;
+               }
+               else 
+               {
+                $idclientelogin=session('idcli');
+               }
         // if (!$request->ajax()) return redirect ('/');
-
+               
         $buscar = $request->buscar;
         $criterio = $request->criterio;
         if ($buscar==''){
             $reserva = reserva::join('cliente','reserva.idCliente','=', 'cliente.id')
                                     ->join('salon','reserva.idSalon','=','salon.id')
             ->select('reserva.id','reserva.fecha','reserva.fechaInicio','reserva.fechaFin','reserva.pago','cliente.nombre as nombrecli','salon.nombre as nombresalon','reserva.estado as estadoreser')
-            ->where('cliente.id','=', Auth()->user()->id)
+            ->where('cliente.id','=', $idclientelogin)
+            ->where('reserva.estado','<>','anulado' )
             ->orderBy('reserva.id','desc')->paginate(20);
         }
         else{$reserva = reserva::join('cliente','reserva.idCliente','=', 'cliente.id')
                                      ->join('salon','reserva.idSalon','=','salon.id')
             ->select('reserva.id','reserva.fecha','reserva.fechaInicio','reserva.fechaFin','reserva.pago','cliente.nombre as nombrecli','salon.nombre as nombresalon','reserva.estado as estadoreser')
-            ->where('cliente.'.$criterio, 'like', '%'. $buscar . '%' ) 
+            ->where('cliente.'.$criterio, 'like', '%'. $buscar . '%' )
+            ->where('cliente.id','=', $idclientelogin)
+            ->where('reserva.estado','<>','anulado' ) 
             ->orderBy('reserva.id','desc')->paginate(20);
         }
         return [
@@ -79,11 +99,21 @@ class ctrlReserva extends Controller
 
     public function guardar(Request $request)
     {
+        $idclientelogin=0;
+               if (Auth()->user()) 
+               {
+                $idclientelogin=Auth()->user()->id;
+               }
+               else 
+               {
+                $idclientelogin=session('idcli');
+               }
         // if (!$request->ajax()) return redirect('/');
+        $idpaquete=0;
         DB::beginTransaction();
         try{     
         $tabla = new reserva();
-        $tabla->idCliente = Auth()->user()->id;
+        $tabla->idCliente = $idclientelogin;
         // $tabla->idEmpleado = $request->idEmpleado;
         $tabla->idSalon = $request->idSalon;
         $tabla->fecha = $request->fecha;
@@ -101,6 +131,9 @@ class ctrlReserva extends Controller
             // $detalle->cantidad=$det['cantidad'];
             // $detalle->subTotal=$det['subTotal'];
             $detalle->save();
+            /*OBTENEMOS EL ID DEL PAQUETE PARA PONERLO EN OCUUPADO */
+            $obpaqueteitem=paqueteitem::findOrFail($det['id']);
+            $idpaquete=$obpaqueteitem->idPaquete;
         }
         DB::commit();
         }
@@ -108,6 +141,15 @@ class ctrlReserva extends Controller
         {
             DB::rollBack();
         }
+
+        /*ponemos ocupado el salon */
+            $salon= salon::findOrFail($request->idSalon);
+            $salon->estado='ocupado';
+            $salon->save();
+        /*ponemos ocupado el paquete */
+            $paquete= paquete::findOrFail($idpaquete);
+            $paquete->estado='ocupado';
+            $paquete->save();
     }
 
 
@@ -148,13 +190,76 @@ class ctrlReserva extends Controller
         $reserva = reserva::findOrFail($id);
         $reserva->estado = 'anulado';
         $reserva->save();  
+
+                /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+                if (session('idemp')!='')
+                {
+
+                $objdate = new DateTime();
+                $fechaactual= $objdate->format('Y-m-d');
+                $horaactual=$objdate->format('H:i:s');
+                $bitacora = new bitacora();
+                $bitacora->idEmpleado =  session('idemp');
+                $bitacora->fecha = $fechaactual;
+                $bitacora->hora = $horaactual;
+                $bitacora->tabla = 'reserva';
+                $bitacora->codigoTabla = $id;
+                $bitacora->transaccion = 'anular';
+                $bitacora->save();
+                }
+
+                /*OBTENEMOS EL ID DEL SALON PARA ACTIVARLO NUEVAMENTE */
+                $obreserva = reserva::select("id","idSalon")
+                ->where("id","=",$id)
+                ->get();
+                $idsalon=$obreserva[0]->idSalon;
+                $idreserva=$obreserva[0]->id;
+                /*ponemos activo el salon */
+                $salon= salon::findOrFail($idsalon);
+                $salon->estado='activo';
+                $salon->save();
+                /*OBTENEMOS EL ID DEL PAQUETE PARA ACTIVARLO NUEVAMENTE */
+                $detallereserva=detallereserva::select('id','idPaqueteitem')
+                ->where("idReserva","=",$idreserva)
+                ->get();
+                $idpaqueteitem=$detallereserva[0]->idPaqueteitem;
+
+                $paqueteitem=paqueteitem::select('id','idPaquete')
+                ->where("id","=",$idpaqueteitem)
+                ->get();
+                $idpaquete=$paqueteitem[0]->idPaquete;
+
+                /*ponemos activo el paquete */
+                $paquete= paquete::findOrFail($idpaquete);
+                $paquete->estado='activo';
+                $paquete->save();
     }
+
+
+
    #se entrega la reserva al cliente 
     public function entregarReserva($id)
     {
         $reserva = reserva::findOrFail($id);
         $reserva->estado = 'entregado';
         $reserva->save();  
+
+        /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+            if (session('idemp')!='')
+            {
+
+            $objdate = new DateTime();
+            $fechaactual= $objdate->format('Y-m-d');
+            $horaactual=$objdate->format('H:i:s');
+            $bitacora = new bitacora();
+            $bitacora->idEmpleado =  session('idemp');
+            $bitacora->fecha = $fechaactual;
+            $bitacora->hora = $horaactual;
+            $bitacora->tabla = 'reserva';
+            $bitacora->codigoTabla = $id;
+            $bitacora->transaccion = 'entregar';
+            $bitacora->save();
+            }
     }
 
     #el cliente entrega el paquete y el salon de la reserva 
@@ -162,7 +267,50 @@ class ctrlReserva extends Controller
     {
         $reserva = reserva::findOrFail($id);
         $reserva->estado = 'terminado';
-        $reserva->save();  
+        $reserva->save(); 
+        
+        /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+        if (session('idemp')!='')
+        {
+
+        $objdate = new DateTime();
+        $fechaactual= $objdate->format('Y-m-d');
+        $horaactual=$objdate->format('H:i:s');
+        $bitacora = new bitacora();
+        $bitacora->idEmpleado =  session('idemp');
+        $bitacora->fecha = $fechaactual;
+        $bitacora->hora = $horaactual;
+        $bitacora->tabla = 'reserva';
+        $bitacora->codigoTabla = $id;
+        $bitacora->transaccion = 'recibir';
+        $bitacora->save();
+        }
+
+                /*OBTENEMOS EL ID DEL SALON PARA ACTIVARLO NUEVAMENTE */
+                $obreserva = reserva::select("id","idSalon")
+                ->where("id","=",$id)
+                ->get();
+                $idsalon=$obreserva[0]->idSalon;
+                $idreserva=$obreserva[0]->id;
+                /*ponemos activo el salon */
+                $salon= salon::findOrFail($idsalon);
+                $salon->estado='activo';
+                $salon->save();
+                /*OBTENEMOS EL ID DEL PAQUETE PARA ACTIVARLO NUEVAMENTE */
+                $detallereserva=detallereserva::select('id','idPaqueteitem')
+                ->where("idReserva","=",$idreserva)
+                ->get();
+                $idpaqueteitem=$detallereserva[0]->idPaqueteitem;
+
+                $paqueteitem=paqueteitem::select('id','idPaquete')
+                ->where("id","=",$idpaqueteitem)
+                ->get();
+                $idpaquete=$paqueteitem[0]->idPaquete;
+
+                /*ponemos activo el paquete */
+                $paquete= paquete::findOrFail($idpaquete);
+                $paquete->estado='activo';
+                $paquete->save();
     }
  
 }

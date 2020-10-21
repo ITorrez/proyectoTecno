@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\bitacora;
-
+session_start();
 class ctrlBitacora extends Controller
 {
     /**
@@ -23,14 +23,14 @@ class ctrlBitacora extends Controller
             $bitacora = bitacora::join('empleado','bitacora.idEmpleado','=','empleado.id')
             ->select('bitacora.id','bitacora.idEmpleado','bitacora.fecha','bitacora.hora','bitacora.tabla','bitacora.codigoTabla','bitacora.transaccion'
             ,'empleado.nombre')
-            ->orderBy('bitacora.id', 'desc')->paginate(3);
+            ->orderBy('bitacora.id', 'desc')->paginate(50);
         }
         else{
             $bitacora = bitacora::join('empleado','bitacora.idEmpleado','=','empleado.id')
             ->select('bitacora.id','bitacora.idEmpleado','bitacora.fecha','bitacora.hora','bitacora.tabla','bitacora.codigoTabla','bitacora.transaccion'
             ,'empleado.nombre')
             ->where('bitacora.'.$criterio, 'like', '%'. $buscar . '%')
-            ->orderBy('bitacora.id', 'desc')->paginate(3);
+            ->orderBy('bitacora.id', 'desc')->paginate(50);
         }
         return [
             'pagination' => [
@@ -56,7 +56,7 @@ class ctrlBitacora extends Controller
     {
         if (!$request->ajax()) return redirect('/');
         $bitacora = new bitacora();
-        $bitacora->idEmpleado = $request->idEmpleado;
+        $bitacora->idEmpleado =  session('idemp');
         $bitacora->fecha = $request->fecha;
         $bitacora->hora = $request->hora;
         $bitacora->tabla = $request->tabla;

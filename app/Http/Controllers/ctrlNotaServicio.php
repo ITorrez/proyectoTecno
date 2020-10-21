@@ -7,6 +7,13 @@ use App\notaservicio;
 use App\detallenotapaquete;
 use DB;
 
+use App\paqueteitem;
+use App\paquete;
+use App\salon;
+use App\bitacora;
+use DateTime;
+session_start();
+
 class ctrlNotaServicio extends Controller
 {
     /**
@@ -105,11 +112,12 @@ class ctrlNotaServicio extends Controller
     public function guardar(Request $request)
     {
         // if (!$request->ajax()) return redirect('/');
+        $idpaquete=0;
         DB::beginTransaction();
         try{     
         $tabla = new notaservicio();
         $tabla->idCliente = $request->idCliente;
-        $tabla->idEmpleado = $request->idEmpleado;
+        $tabla->idEmpleado = session('idemp');
         $tabla->idSalon = $request->idSalon;
         $tabla->fecha = $request->fecha;
         $tabla->fechaInicio = $request->fechaInicio;
@@ -126,6 +134,12 @@ class ctrlNotaServicio extends Controller
             // $detalle->cantidad=$det['cantidad'];
             // $detalle->subTotal=$det['subTotal'];
             $detalle->save();
+            /*OBTENEMOS EL ID DEL PAQUETE PARA PONERLO EN OCUUPADO */
+            $obpaqueteitem=paqueteitem::findOrFail($det['id']);
+            $idpaquete=$obpaqueteitem->idPaquete;
+
+
+            
         }
         DB::commit();
         }
@@ -133,6 +147,28 @@ class ctrlNotaServicio extends Controller
         {
             DB::rollBack();
         }
+       /*ponemos ocupado el salon */
+        $salon= salon::findOrFail($request->idSalon);
+        $salon->estado='ocupado';
+        $salon->save();
+        /*ponemos ocupado el paquete */
+            $paquete= paquete::findOrFail($idpaquete);
+            $paquete->estado='ocupado';
+            $paquete->save();
+
+
+                /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+                $objdate = new DateTime();
+                $fechaactual= $objdate->format('Y-m-d');
+                $horaactual=$objdate->format('H:i:s');
+                $bitacora = new bitacora();
+                $bitacora->idEmpleado =  session('idemp');
+                $bitacora->fecha = $fechaactual;
+                $bitacora->hora = $horaactual;
+                $bitacora->tabla = 'notaservicio';
+                $bitacora->codigoTabla = $tabla->id;
+                $bitacora->transaccion = 'crear';
+                $bitacora->save();
     }
     public function actualizar(Request $request)
     {
@@ -155,6 +191,48 @@ class ctrlNotaServicio extends Controller
         $notaservicio = notaservicio::findOrFail($id);
         $notaservicio->estado = 'terminado';
         $notaservicio->save();  
+
+        /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+        $objdate = new DateTime();
+        $fechaactual= $objdate->format('Y-m-d');
+        $horaactual=$objdate->format('H:i:s');
+        $bitacora = new bitacora();
+        $bitacora->idEmpleado =  session('idemp');
+        $bitacora->fecha = $fechaactual;
+        $bitacora->hora = $horaactual;
+        $bitacora->tabla = 'notaservicio';
+        $bitacora->codigoTabla = $id;
+        $bitacora->transaccion = 'recibir';
+        $bitacora->save();
+
+
+        /*OBTENEMOS EL ID DEL SALON PARA ACTIVARLO NUEVAMENTE */
+        $objnotaser = notaservicio::select("id","idSalon")
+        ->where("id","=",$id)
+        ->get();
+       // dd($objnotaser);
+        $idsalon=$objnotaser[0]->idSalon;
+        $idnotaservicio=$objnotaser[0]->id;
+        /*ponemos activo el salon */
+        $salon= salon::findOrFail($idsalon);
+        $salon->estado='activo';
+        $salon->save();
+        /*OBTENEMOS EL ID DEL PAQUETE PARA ACTIVARLO NUEVAMENTE */
+        $detallenotaserv=detallenotapaquete::select('id','idPaqueteitem')
+        ->where("idNotaservicio","=",$idnotaservicio)
+        ->get();
+        $idpaqueteitem=$detallenotaserv[0]->idPaqueteitem;
+
+        $paqueteitem=paqueteitem::select('id','idPaquete')
+        ->where("id","=",$idpaqueteitem)
+        ->get();
+        $idpaquete=$paqueteitem[0]->idPaquete;
+
+        /*ponemos activo el paquete */
+        $paquete= paquete::findOrFail($idpaquete);
+        $paquete->estado='activo';
+        $paquete->save();
+    
     }
     
 }

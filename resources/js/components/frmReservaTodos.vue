@@ -293,12 +293,12 @@
             <table class="table table-responsive-sm table-bordered table-striped table-sm">
               <thead>
                 <tr>
-                  <th colspan="5">Precio del salon</th>
+                  <th colspan="3">Precio del salon</th>
                   <td v-text="data.precioSalon"></td>
                 </tr>
                 <tr>
-                  <th>Opciones</th>
-                  <th>ID</th>
+                  <!-- <th>Opciones</th>
+                  <th>ID</th> -->
                   <th>Nombre</th>
                   <th>Cantidad</th>
                   <th>Precio</th>
@@ -308,7 +308,7 @@
               </thead>
               <tbody v-if="(data.detalle.length)">
                 <tr v-for="(detalle,index) in data.detalle" :key="detalle.id">
-                  <td>
+                  <!-- <td>
                     <button
                       @click="eliminarDetalle(index)"
                       type="button"
@@ -317,7 +317,7 @@
                       <i class="icon-close"></i>
                     </button>
                   </td>
-                  <td>{{ detalle.idItem }}</td>
+                  <td>{{ detalle.idItem }}</td> -->
                   <td>{{ detalle.nombre }}</td>
                   <td>
                     <input
@@ -345,14 +345,14 @@
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="5" class>Total</td>
+                  <td colspan="3" class>Total</td>
 
                   <td>{{ calcularMonto.toFixed(2) }}</td>
                 </tr>
               </tbody>
               <tbody v-else>
                 <tr>
-                  <td colspan="8">No hay Productos Agregados</td>
+                  <td colspan="6">No hay Productos Agregados</td>
                 </tr>
               </tbody>
             </table>

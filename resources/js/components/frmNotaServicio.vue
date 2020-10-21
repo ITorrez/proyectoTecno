@@ -190,7 +190,7 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <label>Empleado</label>
+                  <!-- <label>Empleado</label> -->
                   <!-- <v-select
                     :options="arrayEmpleado"
                     label="nombre"
@@ -198,10 +198,10 @@
                     :selectedValue="selectedTipo"
                     :getOptionKey="seleccionadoTipo"
                   /> -->
-                  <select class="form-control" v-model="data.idEmpleado">
+                  <!-- <select class="form-control" v-model="data.idEmpleado">
                       <option value="0" disabled>Seleccione Empleado</option>
                       <option v-for="obj in arrayEmpleado" :key="obj.id" :value="obj.id" >{{ obj.nombre }}</option>
-                    </select>  
+                    </select>   -->
                 </div>
 
                 <div class="form-group">
@@ -277,11 +277,11 @@
             <table class="table table-responsive-sm table-bordered table-striped table-sm">
               <thead>
                 <tr>
-                  <th colspan="5">Precio del salon</th>
+                  <th colspan="4">Precio del salon</th>
                   <td v-text="data.precioSalon"></td>
                 </tr>
                 <tr>
-                  <th>Opciones</th>
+                  <!-- <th>Opciones</th> -->
                   <th>ID</th>
                   <th>Nombre</th>
                   <th>Cantidad</th>
@@ -292,7 +292,7 @@
               </thead>
               <tbody v-if="(data.detalle.length)">
                 <tr v-for="(detalle,index) in data.detalle" :key="detalle.id">
-                  <td>
+                  <!-- <td>
                     <button
                       @click="eliminarDetalle(index)"
                       type="button"
@@ -300,7 +300,7 @@
                     >
                       <i class="icon-close"></i>
                     </button>
-                  </td>
+                  </td> -->
                   <td>{{ detalle.idItem }}</td>
                   <td>{{ detalle.nombre }}</td>
                   <td>
@@ -329,7 +329,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="5" class>Total</td>
+                  <td colspan="4" class>Total</td>
 
                   <td>{{ calcularMonto.toFixed(2) }}</td>
                 </tr>

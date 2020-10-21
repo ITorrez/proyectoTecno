@@ -535,6 +535,7 @@ export default {
               swal("Eliminado!", "El  ha sido eliminado con exito.", "success");
             })
             .catch(function (error) {
+              swal("Error!", "Este Paquete ya esta relacionado con la nota de servicio o reserva.", "error");
               console.log(error);
             });
         } else if (

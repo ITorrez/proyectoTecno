@@ -9,9 +9,9 @@
             <div class="card">
                 <div class="card-header">
                     <i class="fa fa-align-justify"></i> Bitacora
-                    <button type="button" @click="abrirModal('bitacora','guardar')" class="btn btn-secondary" >
+                    <!-- <button type="button" @click="abrirModal('bitacora','guardar')" class="btn btn-secondary" >
                         <i class="icon-plus"></i>&nbsp;Nuevo
-                    </button>
+                    </button> -->
                 </div>
                 <div class="card-body">
                     <div class="form-group row">

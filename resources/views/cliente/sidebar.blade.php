@@ -2,9 +2,22 @@
     <nav class="sidebar-nav">
         <ul class="nav">       
             <li class="nav-title">
+
+              <?php
+              $nombreCliente="";
+               if (Auth()->user()) 
+               {
+                $nombreCliente=Auth()->user()->nombre;
+               }
+               else {
+                $nombreCliente=session('nombrecli');
+               } 
+                
+              ?>
+
                 Panel <br>
-                @if (Auth()->user())
-                <label>Usuario: {{ Auth()->user()->nombre }}</label>
+                @if ($nombreCliente!="" )
+                <label>Usuario: {{ $nombreCliente }}</label>
                 @endif
             </li>
             {{-- <li class="nav-item nav-dropdown">
@@ -18,7 +31,7 @@
                     </li>
                 </ul>
             </li> --}}
-            @if (!Auth()->user())
+            @if ($nombreCliente=="")
             <li class="nav-item nav-dropdown">
                 <a target="_blank" class="nav-link nav-dropdown-toggle" href="{{ route('login') }}"><i class="icon-wallet"></i> Iniciar </a>
                 {{-- <ul class="nav-dropdown-items">
@@ -33,7 +46,7 @@
             @endif
 
 
-             @if (Auth()->user())
+             @if ($nombreCliente!="")
              <li class="nav-item nav-dropdown">
                 <a  class="nav-link nav-dropdown-toggle" href="#"><i class="icon-wallet"></i> Servicios </a>
                 <ul class="nav-dropdown-items">
@@ -49,20 +62,25 @@
             
             
             <li class="nav-item nav-dropdown">
-                <a class="nav-link " onclick="cerratVentana();return false;" href="#"><i class="icon-basket"></i> Salir</a>
-                <ul class="nav-dropdown-items">
+                
+                <a class="nav-link" href="/cliente" onclick="event.preventDefault();
+                                       document.getElementById('logout-form').submit();"
+                                       ><i class="icon-logout"></i> Cerrar sesión
+                </a>
+                
+                {{-- <ul class="nav-dropdown-items">
                     <li @click="menu=23" class="nav-item">
                         <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Paquetes</a>
                     </li>
                     <li @click="menu=3" class="nav-item">
                         <a class="nav-link" href="#"><i class="icon-notebook"></i> Tipo de Paquetes</a>
                     </li>
-                </ul>
+                </ul> --}}
             </li>
 
             @endif
             
-            @if (!Auth()->user())
+            @if ($nombreCliente=="")
             <li class="nav-item nav-dropdown">    
                 <a target="_blank" class="nav-link nav-dropdown-toggle" href="{{ route('register') }}"><i class="icon-wallet"></i>Registro </a>
                 {{-- <ul class="nav-dropdown-items">
@@ -140,6 +158,10 @@
            
         </ul>
     </nav>
+
+    <form id="logout-form" method="POST" action="{{ route('cliente.logout') }}" style="display: none;">
+        @csrf
+    </form>
     <button class="sidebar-minimizer brand-minimizer" type="button"></button>
     {{-- <a href="reservas">Salirff</a> --}}
 </div>

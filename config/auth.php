@@ -46,6 +46,11 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        'empleado'=>[
+            'driver' => 'session',
+            'provider' => 'empleado',
+        ],
     ],
 
     /*
@@ -75,6 +80,10 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+        'empleado' => [
+            'driver' => 'eloquent',
+            'model' => App\empleado::class,
+        ]
     ],
 
 

@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\tipopaquete;
 
+use App\bitacora;
+use DateTime;
+session_start();
+
 class ctrlTipoPaquete extends Controller
 {
     /**
@@ -18,10 +22,10 @@ class ctrlTipoPaquete extends Controller
         $criterio = $request->criterio;
          
         if ($buscar==''){
-            $tipopaquete = tipopaquete::orderBy('id', 'desc')->paginate(5);
+            $tipopaquete = tipopaquete::orderBy('id', 'desc')->paginate(20);
         }
         else{
-            $tipopaquete = tipopaquete::where($criterio, 'like', '%'. $buscar . '%')->orderBy('id', 'desc')->paginate(5);
+            $tipopaquete = tipopaquete::where($criterio, 'like', '%'. $buscar . '%')->orderBy('id', 'desc')->paginate(20);
         }
         return [
             'pagination' => [
@@ -56,6 +60,19 @@ class ctrlTipoPaquete extends Controller
         $tipopaquete->nombre=$request->nombre;
         $tipopaquete->descripcion=$request->descripcion;
         $tipopaquete->save();
+
+        /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+        $objdate = new DateTime();
+        $fechaactual= $objdate->format('Y-m-d');
+        $horaactual=$objdate->format('H:i:s');
+           $bitacora = new bitacora();
+           $bitacora->idEmpleado =  session('idemp');
+           $bitacora->fecha = $fechaactual;
+           $bitacora->hora = $horaactual;
+           $bitacora->tabla = 'tipopaquete';
+           $bitacora->codigoTabla = $tipopaquete->id;
+           $bitacora->transaccion = 'crear';
+           $bitacora->save();
     }
     
     public function actualizar(Request $request)
@@ -64,11 +81,37 @@ class ctrlTipoPaquete extends Controller
         $tipopaquete->nombre=$request->nombre;
         $tipopaquete->descripcion=$request->descripcion;
         $tipopaquete->save();
+
+         /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+         $objdate = new DateTime();
+         $fechaactual= $objdate->format('Y-m-d');
+         $horaactual=$objdate->format('H:i:s');
+            $bitacora = new bitacora();
+            $bitacora->idEmpleado =  session('idemp');
+            $bitacora->fecha = $fechaactual;
+            $bitacora->hora = $horaactual;
+            $bitacora->tabla = 'tipopaquete';
+            $bitacora->codigoTabla = $request->id;
+            $bitacora->transaccion = 'actualizar';
+            $bitacora->save();
     }
     public function eliminar($id)
     {
         $tipopaquete=tipopaquete::find($id);
         $tipopaquete->delete();
+
+        /*REGISTRA EL MOVIMIENTO EN LA BITACORA */
+        $objdate = new DateTime();
+        $fechaactual= $objdate->format('Y-m-d');
+        $horaactual=$objdate->format('H:i:s');
+           $bitacora = new bitacora();
+           $bitacora->idEmpleado =  session('idemp');
+           $bitacora->fecha = $fechaactual;
+           $bitacora->hora = $horaactual;
+           $bitacora->tabla = 'tipopaquete';
+           $bitacora->codigoTabla = $id;
+           $bitacora->transaccion = 'eliminar';
+           $bitacora->save();
     }
 
  }

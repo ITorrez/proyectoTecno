@@ -11,6 +11,7 @@ class paquete extends Model
      'idTipoPaquete',
      'acontecimiento',
      'precio',
+     'estado',
      
     ];
     public $timestamps=false;

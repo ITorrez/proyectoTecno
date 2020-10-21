@@ -1,8 +1,12 @@
+<?php
+
+?>
 <div class="sidebar">
     <nav class="sidebar-nav">
         <ul class="nav">       
             <li class="nav-title">
-                Panel
+                Panel <br>
+             <label> Empleado: {{ session('nombreemp') }} </label> 
             </li>
             {{-- <li class="nav-item nav-dropdown">
                 <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Cliente</a>
@@ -71,7 +75,11 @@
                 </ul>
             </li>
             <li class="nav-item nav-dropdown">
-                <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-pie-chart"></i> Reportes</a>
+                <a class="nav-link" href="#" onclick="event.preventDefault();
+                                       document.getElementById('logout-form').submit();"
+                                       ><i class="icon-logout"></i> Cerrar sesión
+                </a>
+                {{-- <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-pie-chart"></i> Reportes</a>
                 <ul class="nav-dropdown-items">
                     <li @click="menu=10" class="nav-item">
                         <a class="nav-link" href="#"><i class="icon-chart"></i> Reporte Ingresos</a>
@@ -79,10 +87,13 @@
                     <li @click="menu=11" class="nav-item">
                         <a class="nav-link" href="#"><i class="icon-chart"></i> Reporte Ventas</a>
                     </li>
-                </ul>
+                </ul> --}}
             </li>
            
         </ul>
     </nav>
+    <form id="logout-form" method="POST" action="{{ route('empleado.logout') }}" style="display: none;">
+        @csrf
+    </form>
     <button class="sidebar-minimizer brand-minimizer" type="button"></button>
 </div>
