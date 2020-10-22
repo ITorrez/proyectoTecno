@@ -7,6 +7,8 @@ use App\reserva;
 use App\detallereserva;
 use DB;
 
+use App\detallenotapaquete;
+use App\notaservicio;
 use App\paqueteitem;
 use App\paquete;
 use App\salon;
@@ -260,6 +262,47 @@ class ctrlReserva extends Controller
             $bitacora->transaccion = 'entregar';
             $bitacora->save();
             }
+
+
+       /*AL ENTREGAR LA RESERVA AL CLIENTE, ESTA SE CONVIERTE EN NOTA DE SERVICIO */
+       DB::beginTransaction();
+        try{  
+        /*insertamos la notaservicio */   
+        $tabla = new notaservicio();
+        $tabla->idCliente = $reserva->idCliente;
+        $tabla->idEmpleado = session('idemp');
+        $tabla->idSalon = $reserva->idSalon;
+        $tabla->fecha = $reserva->fecha;
+        $tabla->fechaInicio = $reserva->fechaInicio;
+        $tabla->fechaFin = $reserva->fechaFin;
+        $tabla->montoTotal = $reserva->pago;
+        $tabla->estado = 'entregado';
+        $tabla->save();
+
+        /*insertamos el detallenotapaquete */
+        /*obtenemos los detalles de reserva */
+        $objdetallereserva = detallereserva::select("id","idReserva","idPaqueteitem")
+        ->where("idReserva","=",$id)
+        ->get();
+        //recorremos todos los detalles de reserva
+        foreach($objdetallereserva as $det)
+        {
+            $detalle = new detallenotapaquete();
+            $detalle->idNotaservicio=$tabla->id;
+            $detalle->idPaqueteitem=$det['idPaqueteitem'];
+            
+            $detalle->save();
+            /*OBTENEMOS EL ID DEL PAQUETE PARA PONERLO EN OCUUPADO */
+            // $obpaqueteitem=paqueteitem::findOrFail($det['id']);
+            // $idpaquete=$obpaqueteitem->idPaquete;    
+        }
+        DB::commit();
+        }
+        catch(Exception $ex)
+        {
+            DB::rollBack();
+        }
+        /*FIN DEL CODIGO QUE INSERTA A NOTASERVICIO LA RESERVA */     
     }
 
     #el cliente entrega el paquete y el salon de la reserva 

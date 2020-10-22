@@ -81,7 +81,7 @@
                       </button>
                     </template>
 
-                    <template v-if="reserva.estadoreser == 'entregado'">
+                    <!-- <template v-if="reserva.estadoreser == 'entregado'">
                       <button
                         type="button"
                         class="btn-primary btn-sm"
@@ -89,7 +89,7 @@
                       >
                         Recibir
                       </button>
-                    </template>
+                    </template> -->
                   </td>
                   <td v-text="reserva.id"></td>
                   <td v-text="reserva.fecha"></td>
